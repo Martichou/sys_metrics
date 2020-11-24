@@ -1,14 +1,23 @@
+//! `sys_metrics` is a crate used to get a system's information.
+
 pub mod cpu;
 pub mod disks;
 pub mod memory;
 pub mod miscs;
-pub mod models;
+mod models;
 pub mod network;
 pub mod users;
 
+pub use models::*;
+
 #[cfg(target_os = "macos")]
 use mach::vm_types::integer_t;
-use std::{fs, io::Error};
+#[cfg(target_os = "linux")]
+use std::fs;
+
+use nix::sys;
+use std::io::{Error, ErrorKind};
+use std::path::Path;
 
 #[allow(non_camel_case_types)]
 #[cfg(target_os = "macos")]
@@ -28,14 +37,15 @@ lazy_static::lazy_static! {
 }
 
 /// Read from path to content, trim it and return the String
-pub fn read_and_trim(path: &str) -> Result<String, Error> {
+#[cfg(target_os = "linux")]
+pub(crate) fn read_and_trim(path: &str) -> Result<String, Error> {
     let content = fs::read_to_string(path)?;
     Ok(content.trim().to_owned())
 }
 
 /// Detect if a filesysteme is for a physical drive or not.
 /// This is not 100% true, but it's true enough for me.
-pub fn is_physical_filesys(filesysteme: &str) -> bool {
+pub(crate) fn is_physical_filesys(filesysteme: &str) -> bool {
     match filesysteme {
         "ext2" => true,
         "ext3" => true,
@@ -58,4 +68,20 @@ pub fn is_physical_filesys(filesysteme: &str) -> bool {
         "fuseblk" => true,
         _ => false,
     }
+}
+
+/// Return the total/free space of a Disk from it's path (mount_point).
+/// For both Linux and macOS.
+pub(crate) fn disk_usage<P>(path: P) -> Result<(u64, u64), Error>
+where
+    P: AsRef<Path>,
+{
+    let statvfs = match sys::statvfs::statvfs(path.as_ref()) {
+        Ok(val) => val,
+        Err(x) => return Err(Error::new(ErrorKind::Other, x)),
+    };
+    let total = statvfs.blocks() as u64 * statvfs.fragment_size() as u64;
+    let free = statvfs.blocks_available() as u64 * statvfs.fragment_size() as u64;
+
+    Ok((total, free))
 }

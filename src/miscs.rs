@@ -79,7 +79,7 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
         Ok(val) => val,
         Err(x) => return Err(Error::new(ErrorKind::Other, x)),
     };
-    let uptime = y.uptime().as_secs() as i64;
+    let uptime = y.uptime().as_secs();
     let loadavg_raw = y.load_average();
     let loadavg = LoadAvg {
         one: loadavg_raw.0,
@@ -87,10 +87,10 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
         fifteen: loadavg_raw.2,
     };
     let memory = Memory {
-        total_virt: y.ram_total() as i64,
-        total_swap: y.swap_total() as i64,
-        avail_virt: y.ram_unused() as i64,
-        avail_swap: y.swap_free() as i64,
+        total_virt: y.ram_total(),
+        total_swap: y.swap_total(),
+        avail_virt: y.ram_unused(),
+        avail_swap: y.swap_free(),
     };
 
     Ok(HostInfo {
@@ -106,9 +106,9 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
 #[cfg(target_os = "macos")]
 pub fn get_host_info() -> Result<HostInfo, Error> {
     let x = sys::utsname::uname();
-    let uptime = get_uptime().unwrap().as_secs() as i64;
+    let uptime = get_uptime().unwrap().as_secs();
     let loadavg = get_loadavg().unwrap();
-    let memory = unsafe { get_memory() }?;
+    let memory = get_memory()?;
 
     Ok(HostInfo {
         loadavg,

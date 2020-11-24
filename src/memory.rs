@@ -43,76 +43,75 @@ pub fn get_memory() -> Result<Memory, Error> {
     };
 
     Ok(Memory {
-        total_virt: y.ram_total() as i64,
-        total_swap: y.swap_total() as i64,
-        avail_virt: y.ram_unused() as i64,
-        avail_swap: y.swap_free() as i64,
+        total_virt: y.ram_total(),
+        total_swap: y.swap_total(),
+        avail_virt: y.ram_unused(),
+        avail_swap: y.swap_free(),
     })
 }
 
 /// Return the Memory struct using some syscall due to macos special shitty implementation.
-///
-/// # Safety
-/// no risk, no fun
 #[cfg(target_os = "macos")]
-pub unsafe fn get_memory() -> Result<Memory, Error> {
+pub fn get_memory() -> Result<Memory, Error> {
     let count = 38;
     // ALLOCATE A PORT
-    let port = mach_host_self();
-    let mut vm_stats = std::mem::MaybeUninit::<vm_statistics64>::uninit();
-    // GET HOST INFO ABOUT MEMORY
-    let result = host_statistics64(port, 4, &mut vm_stats as *mut _ as host_info64_t, &count);
-    // FREE THE PORT USED
-    let port_result = mach_port_deallocate(mach_task_self(), port);
-    if port_result != 0 {
-        return Err(Error::last_os_error());
-    }
-    // CHECK THE RETURN VALUE OF host_statistics64
-    if result != 0 {
-        return Err(Error::last_os_error());
-    }
-    let vm_stats = vm_stats.assume_init();
+    unsafe {
+        let port = mach_host_self();
+        let mut vm_stats = std::mem::MaybeUninit::<vm_statistics64>::uninit();
+        // GET HOST INFO ABOUT MEMORY
+        let result = host_statistics64(port, 4, &mut vm_stats as *mut _ as host_info64_t, &count);
+        // FREE THE PORT USED
+        let port_result = mach_port_deallocate(mach_task_self(), port);
+        if port_result != 0 {
+            return Err(Error::last_os_error());
+        }
+        // CHECK THE RETURN VALUE OF host_statistics64
+        if result != 0 {
+            return Err(Error::last_os_error());
+        }
+        let vm_stats = vm_stats.assume_init();
 
-    // TOTAL VIRTUAL MEMORY
-    let mut name: [i32; 2] = [6, 24];
-    let mut virt_total = 0u64;
-    let mut length = std::mem::size_of::<u64>();
-    if libc::sysctl(
-        name.as_mut_ptr(),
-        2,
-        &mut virt_total as *mut u64 as *mut libc::c_void,
-        &mut length,
-        std::ptr::null_mut(),
-        0,
-    ) != 0
-    {
-        return Err(Error::last_os_error());
-    }
-    // DEFINE PAGE SIZE FOR MEMORY
-    // AVAILABLE VIRT MEMORY
-    let virt_avail = (vm_stats.active_count + vm_stats.free_count) as u64 * (*PAGE_SIZE);
+        // TOTAL VIRTUAL MEMORY
+        let mut name: [i32; 2] = [6, 24];
+        let mut virt_total = 0u64;
+        let mut length = std::mem::size_of::<u64>();
+        if libc::sysctl(
+            name.as_mut_ptr(),
+            2,
+            &mut virt_total as *mut u64 as *mut libc::c_void,
+            &mut length,
+            std::ptr::null_mut(),
+            0,
+        ) != 0
+        {
+            return Err(Error::last_os_error());
+        }
+        // DEFINE PAGE SIZE FOR MEMORY
+        // AVAILABLE VIRT MEMORY
+        let virt_avail = (vm_stats.active_count + vm_stats.free_count) as u64 * (*PAGE_SIZE);
 
-    // SWAP MEMORY
-    let mut name: [i32; 2] = [2, 5];
-    let mut swap_info = std::mem::MaybeUninit::<libc::xsw_usage>::uninit();
-    let mut length = std::mem::size_of::<libc::xsw_usage>();
-    if libc::sysctl(
-        name.as_mut_ptr(),
-        2,
-        swap_info.as_mut_ptr() as *mut libc::c_void,
-        &mut length,
-        std::ptr::null_mut(),
-        0,
-    ) != 0
-    {
-        return Err(Error::last_os_error());
-    }
-    let swap_info = swap_info.assume_init();
+        // SWAP MEMORY
+        let mut name: [i32; 2] = [2, 5];
+        let mut swap_info = std::mem::MaybeUninit::<libc::xsw_usage>::uninit();
+        let mut length = std::mem::size_of::<libc::xsw_usage>();
+        if libc::sysctl(
+            name.as_mut_ptr(),
+            2,
+            swap_info.as_mut_ptr() as *mut libc::c_void,
+            &mut length,
+            std::ptr::null_mut(),
+            0,
+        ) != 0
+        {
+            return Err(Error::last_os_error());
+        }
+        let swap_info = swap_info.assume_init();
 
-    Ok(Memory {
-        total_virt: virt_total as i64,
-        total_swap: swap_info.xsu_total as i64,
-        avail_virt: virt_avail as i64,
-        avail_swap: swap_info.xsu_avail as i64,
-    })
+        Ok(Memory {
+            total_virt: virt_total,
+            total_swap: swap_info.xsu_total,
+            avail_virt: virt_avail,
+            avail_swap: swap_info.xsu_avail,
+        })
+    }
 }

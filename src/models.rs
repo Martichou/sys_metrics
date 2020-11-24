@@ -2,14 +2,16 @@
 use mach::vm_types::natural_t;
 use serde::Serialize;
 
+/// Struct containing a disk' information.
 #[derive(Debug, Serialize)]
 pub struct Disks {
     pub name: String,
     pub mount_point: String,
-    pub total_space: i64,
-    pub avail_space: i64,
+    pub total_space: u64,
+    pub avail_space: u64,
 }
 
+/// Struct containing a disk_io (bytes read/wrtn) information.
 #[derive(Debug, Serialize)]
 pub struct IoStats {
     pub device_name: String,
@@ -17,6 +19,7 @@ pub struct IoStats {
     pub bytes_wrtn: i64,
 }
 
+/// Struct containing a cpu's loadavg information.
 #[derive(Debug, Serialize)]
 pub struct LoadAvg {
     pub one: f64,
@@ -24,23 +27,26 @@ pub struct LoadAvg {
     pub fifteen: f64,
 }
 
+/// Struct containing the memory (ram/swap) information.
 #[derive(Debug, Serialize)]
 pub struct Memory {
-    pub total_virt: i64,
-    pub avail_virt: i64,
-    pub total_swap: i64,
-    pub avail_swap: i64,
+    pub total_virt: u64,
+    pub avail_virt: u64,
+    pub total_swap: u64,
+    pub avail_swap: u64,
 }
 
-#[derive(Debug)]
+/// Struct containing the principal host's information.
+#[derive(Debug, Serialize)]
 pub struct HostInfo {
     pub loadavg: LoadAvg,
     pub memory: Memory,
     pub os_version: String,
     pub hostname: String,
-    pub uptime: i64,
+    pub uptime: u64,
 }
 
+#[doc(hidden)]
 #[cfg(target_os = "macos")]
 #[repr(C)]
 pub struct vm_statistics64 {

@@ -25,6 +25,7 @@ const _UTX_IDSIZE: usize = 4;
 #[cfg(target_os = "macos")]
 const _UTX_HOSTSIZE: usize = 256;
 
+#[doc(hidden)]
 #[repr(C)]
 #[derive(Debug)]
 #[cfg(target_os = "linux")]
@@ -33,6 +34,7 @@ pub struct exit_status {
     pub e_exit: c_short,
 }
 
+#[doc(hidden)]
 #[repr(C)]
 #[derive(Debug)]
 #[cfg(not(target_os = "windows"))]
@@ -41,6 +43,7 @@ pub struct ut_tv {
     pub tv_usec: i32,
 }
 
+#[doc(hidden)]
 #[repr(C)]
 #[derive(Debug)]
 #[cfg(target_os = "linux")]

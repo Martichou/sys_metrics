@@ -1,6 +1,6 @@
 use criterion::Criterion;
 use criterion::{criterion_group, criterion_main};
-use metrics_rs::miscs::*;
+use sys_metrics::miscs::*;
 
 pub fn miscs_benches(c: &mut Criterion) {
     c.bench_function("get_os_version", |b| b.iter(|| get_os_version()));

@@ -1,8 +1,16 @@
 [package]
-name = "metrics_rs"
+name = "sys_metrics"
 version = "0.1.0"
 authors = ["Martichou <martichou.andre@gmail.com>"]
 edition = "2018"
+
+repository = "https://github.com/Martichou/sys_metrics"
+description = "Cross-platform library to gather stats/information from the host"
+keywords = ["metrics", "system", "information", "sysinfo", "psutil", "stats", "heim"]
+license = "AGPL-3.0"
+readme = "README.md"
+
+categories = ["os"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

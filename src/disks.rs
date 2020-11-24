@@ -1,3 +1,4 @@
+use super::disk_usage;
 use super::is_physical_filesys;
 
 use crate::models;
@@ -21,12 +22,13 @@ use libc::c_char;
 use models::{Disks, IoStats};
 #[cfg(target_os = "macos")]
 use nix::libc::statfs;
-use nix::sys;
 #[cfg(target_os = "macos")]
 use std::ffi::CStr;
 #[cfg(target_family = "unix")]
-use std::io::{Error, ErrorKind};
-use std::path::{Path, PathBuf};
+use std::io::Error;
+#[cfg(target_os = "macos")]
+use std::io::ErrorKind;
+use std::path::PathBuf;
 #[cfg(target_os = "linux")]
 use std::{
     fs::File,
@@ -58,13 +60,13 @@ pub fn get_partitions_info() -> Result<Vec<Disks>, Error> {
         let m_p = PathBuf::from(unescape(fields[1]).unwrap());
         let usage: (u64, u64) = match disk_usage(&m_p) {
             Ok(val) => val,
-            Err(_) => (0, 0),
+            Err(x) => return Err(x),
         };
         vdisks.push(Disks {
             name: fields[0].to_owned(),
             mount_point: m_p.into_os_string().into_string().unwrap(),
-            total_space: (usage.0 / 100000) as i64,
-            avail_space: (usage.1 / 100000) as i64,
+            total_space: usage.0 / 100000,
+            avail_space: usage.1 / 100000,
         });
     }
 
@@ -107,7 +109,7 @@ pub fn get_partitions_info() -> Result<Vec<Disks>, Error> {
         });
         let usage: (u64, u64) = match disk_usage(&m_p) {
             Ok(val) => val,
-            Err(_) => (0, 0),
+            Err(x) => return Err(x),
         };
         vdisks.push(Disks {
             name: unsafe {
@@ -116,28 +118,12 @@ pub fn get_partitions_info() -> Result<Vec<Disks>, Error> {
                     .to_string()
             },
             mount_point: m_p.into_os_string().into_string().unwrap(),
-            total_space: (usage.0 / 100000) as i64,
-            avail_space: (usage.1 / 100000) as i64,
+            total_space: usage.0 / 100000,
+            avail_space: usage.1 / 100000,
         });
     }
 
     Ok(vdisks)
-}
-
-/// Return the total/free space of a Disk from it's path (mount_point).
-/// For both Linux and macOS.
-pub fn disk_usage<P>(path: P) -> Result<(u64, u64), Error>
-where
-    P: AsRef<Path>,
-{
-    let statvfs = match sys::statvfs::statvfs(path.as_ref()) {
-        Ok(val) => val,
-        Err(x) => return Err(Error::new(ErrorKind::Other, x)),
-    };
-    let total = statvfs.blocks() as u64 * statvfs.fragment_size() as u64;
-    let free = statvfs.blocks_available() as u64 * statvfs.fragment_size() as u64;
-
-    Ok((total, free))
 }
 
 /// Return the disk io usage, number of sectors read, wrtn.
