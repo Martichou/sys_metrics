@@ -19,7 +19,7 @@ use std::{
 /// On linux it will return the first frequency it see from `/proc/cpuinfo` (key: cpu MHz).
 ///
 /// And on macOS it will make a syscall which will return the cpufreq (macOS doesn't seems to have per-core clock).
-/// 
+///
 /// # Exemples
 /// ```
 /// use sys_metrics::cpu::get_cpufreq;
@@ -79,7 +79,7 @@ pub fn get_cpufreq() -> Result<f64, Error> {
 
 /// Returns the [LoadAvg] over the last 1, 5 and 15 minutes.
 ///
-/// In Linux, the [LoadAvg] is technically believed to be a running average 
+/// In Linux, the [LoadAvg] is technically believed to be a running average
 /// of processes in it’s (kernel) execution queue tagged as running or uninterruptible.
 ///
 /// # Exemples

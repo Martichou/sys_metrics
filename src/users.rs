@@ -4,6 +4,7 @@ use libc::{c_char, c_short, c_void, pid_t, read};
 use libc::{getutxent, setutxent, utmpx};
 #[cfg(target_os = "linux")]
 use std::fs::File;
+use std::io::Error;
 use std::mem;
 #[cfg(target_os = "linux")]
 use std::os::unix::prelude::*;
@@ -106,14 +107,14 @@ impl Default for utmp {
 ///
 /// On macOS it will use unsafes call to multiple OSX specific functions [setutxent, getutxent] (the struct is UTMPX for the inner usage).
 #[cfg(target_os = "linux")]
-pub fn get_users() -> Option<Vec<String>> {
+pub fn get_users() -> Result<Vec<String>, Error> {
+    let mut users: Vec<String> = Vec::new();
     let utmp_file = match File::open(UTMP_FILE_PATH) {
         Ok(val) => val,
-        Err(_) => return None,
+        Err(x) => return Err(x),
     };
     let mut utmp_struct: utmp = Default::default();
     let buffer: *mut c_void = &mut utmp_struct as *mut _ as *mut c_void;
-    let mut users: Vec<String> = Vec::new();
 
     unsafe {
         while read(utmp_file.as_raw_fd(), buffer, mem::size_of::<utmp>()) != 0 {
@@ -130,11 +131,11 @@ pub fn get_users() -> Option<Vec<String>> {
         }
     }
 
-    Some(users)
+    Ok(users)
 }
 
 #[cfg(target_os = "macos")]
-pub fn get_users() -> Option<Vec<String>> {
+pub fn get_users() -> Result<Vec<String>, Error> {
     let mut users: Vec<String> = Vec::new();
     #[allow(unused_assignments)]
     let mut buffer: *mut utmpx = unsafe { mem::zeroed() };
@@ -159,5 +160,5 @@ pub fn get_users() -> Option<Vec<String>> {
         }
     }
 
-    Some(users)
+    Ok(users)
 }

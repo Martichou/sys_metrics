@@ -75,7 +75,7 @@ fn get_uptime() -> Result<Duration, Error> {
 ///
 /// On linux and macOS it will get the `os_version` and `hostname` from nix::sys's uname.
 ///
-/// For the `uptime`/`loadavg`/`memory` on linux it will get them from nix::sys's sysinfo. 
+/// For the `uptime`/`loadavg`/`memory` on linux it will get them from nix::sys's sysinfo.
 /// But on macOS it will use the crate [get_loadavg] and [get_memory] and a special get_uptime function using an unsafe syscall.
 ///
 /// [get_loadavg]: ../cpu/fn.get_loadavg.html
