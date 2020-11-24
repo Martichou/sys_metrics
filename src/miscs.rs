@@ -34,13 +34,13 @@ use std::io::{Error, ErrorKind};
 #[cfg(target_os = "macos")]
 use std::time::Duration;
 
-/// Get the os version (Mac/Linux/Windows) in a safe String.
+/// Get the os version (distro + release).
 pub fn get_os_version() -> String {
     let x = sys::utsname::uname();
     x.sysname().to_owned() + "/" + x.release()
 }
 
-/// Get the hostname (Mac/Linux/Windows) in a safe String.
+/// Get the hostname.
 pub fn get_hostname() -> String {
     let x = sys::utsname::uname();
     x.nodename().to_owned()
@@ -48,7 +48,7 @@ pub fn get_hostname() -> String {
 
 /// Return the uptime of the host for macOS.
 #[cfg(target_os = "macos")]
-pub fn get_uptime() -> Result<Duration, Error> {
+fn get_uptime() -> Result<Duration, Error> {
     let mut data = std::mem::MaybeUninit::<timeval>::uninit();
     let mib = [1, 21];
 
@@ -71,7 +71,16 @@ pub fn get_uptime() -> Result<Duration, Error> {
     }
 }
 
-/// Get both hostname and os_version from the same single uname instance.
+/// Get some basic [HostInfo] of the host.
+///
+/// On linux and macOS it will get the `os_version` and `hostname` from nix::sys's uname.
+///
+/// For the `uptime`/`loadavg`/`memory` on linux it will get them from nix::sys's sysinfo. 
+/// But on macOS it will use the crate [get_loadavg] and [get_memory] and a special get_uptime function using an unsafe syscall.
+///
+/// [get_loadavg]: ../cpu/fn.get_loadavg.html
+/// [get_memory]: ../memory/fn.get_memory.html
+/// [HostInfo]: ../struct.HostInfo.html
 #[cfg(target_os = "linux")]
 pub fn get_host_info() -> Result<HostInfo, Error> {
     let x = sys::utsname::uname();
@@ -102,7 +111,6 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
     })
 }
 
-/// Get both hostname and os_version from the same single uname instance.
 #[cfg(target_os = "macos")]
 pub fn get_host_info() -> Result<HostInfo, Error> {
     let x = sys::utsname::uname();
@@ -119,8 +127,11 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
     })
 }
 
-/// Get the machine UUID (Linux) as a String.
-/// LINUX => Will read it from /etc/machine-id or /var/lib/dbus/machine-id.
+/// Get the machine UUID of the host.
+///
+/// On linux it will read it from /etc/machine-id or /var/lib/dbus/machine-id.
+///
+/// On macOS it will use unsafe call to OSX specific function.
 #[cfg(target_os = "linux")]
 pub fn get_uuid() -> Result<String, Error> {
     match read_and_trim("/etc/machine-id") {
@@ -129,8 +140,6 @@ pub fn get_uuid() -> Result<String, Error> {
     }
 }
 
-/// Get the machine Serial Number (macOS) as a String.
-/// macOS => Will get it from some black magic extern C function.
 #[cfg(target_os = "macos")]
 pub fn get_uuid() -> Result<String, Error> {
     #[allow(unused_assignments)]

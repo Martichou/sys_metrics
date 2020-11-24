@@ -42,11 +42,17 @@ extern "C" {
     fn getfsstat64(buf: *mut statfs, bufsize: libc::c_int, flags: libc::c_int) -> libc::c_int;
 }
 
-/// Retrieve the partitions and return them as a Vec<Disks>.
-/// Contains name, mount_point and total/free space.
-/// LINUX => read info from /proc/mounts.
+/// Return a Vec of [Disks] with their minimal informations.
+///
+/// Contains `name`, `mount_point` and `total`/`free` space.
+///
+/// On linux it will get them from `/proc/mounts`.
+///
+/// On macOS it will use an unsafe call to `getfsstat64`.
+///
+/// [Disks]: ../struct.Disks.html
 #[cfg(target_os = "linux")]
-pub fn get_partitions_info() -> Result<Vec<Disks>, Error> {
+pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
     let mut vdisks: Vec<Disks> = Vec::new();
     let file = File::open("/proc/mounts")?;
     let file = BufReader::with_capacity(6144, file);
@@ -73,11 +79,8 @@ pub fn get_partitions_info() -> Result<Vec<Disks>, Error> {
     Ok(vdisks)
 }
 
-/// Retrieve the partitions and return them as a Vec<Disks>.
-/// Contains name, mount_point and total/free space.
-/// macOS => use C's function getfsstat64.
 #[cfg(target_os = "macos")]
-pub fn get_partitions_info() -> Result<Vec<Disks>, Error> {
+pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
     let expected_len = unsafe { getfsstat64(std::ptr::null_mut(), 0, 2) };
     let mut mounts: Vec<statfs> = Vec::with_capacity(expected_len as usize);
 
@@ -126,9 +129,15 @@ pub fn get_partitions_info() -> Result<Vec<Disks>, Error> {
     Ok(vdisks)
 }
 
-/// Return the disk io usage, number of sectors read, wrtn.
-/// From that you can compute the mb/s.
-/// LINUX -> Read data from /proc/diskstats.
+/// Get basic [IoStats] info for each disks/partitions.
+///
+/// It only contains the `device_name` and the number of bytes `read`/`wrtn`.
+///
+/// On linux it will get them from `/proc/diskstats`.
+///
+/// On macOS it will use unsafes call to multiple OSX specific functions.
+///
+/// [IoStats]: ../struct.IoStats.html
 #[cfg(target_os = "linux")]
 pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
     let mut viostats: Vec<IoStats> = Vec::new();
@@ -151,9 +160,6 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
     Ok(viostats)
 }
 
-/// Return the disk io usage, number of sectors read, wrtn.
-/// From that you can compute the mb/s.
-/// macOS -> Read data using heim_disks.
 #[cfg(target_os = "macos")]
 pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
     let mut viostats: Vec<IoStats> = Vec::new();

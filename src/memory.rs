@@ -32,9 +32,15 @@ extern "C" {
     ) -> kern_return_t;
 }
 
-/// Return the Memory struct.
+/// Return the [Memory] struct.
 ///
-/// Might change to use (https://github.com/giampaolo/psutil/blob/21bb0822c7d30adc1e144e87d730cd67eb4fa828/psutil/_pslinux.py#L414).
+/// Only contains the virtual/swap memory total/available.
+///
+/// On linux it will get them from the nix::sys crate.
+///
+/// On macOS it will use unsafe syscall due to specific OSX implementation.
+///
+/// [Memory]: ../struct.Memory.html
 #[cfg(target_os = "linux")]
 pub fn get_memory() -> Result<Memory, Error> {
     let y = match sys::sysinfo::sysinfo() {
@@ -50,7 +56,6 @@ pub fn get_memory() -> Result<Memory, Error> {
     })
 }
 
-/// Return the Memory struct using some syscall due to macos special shitty implementation.
 #[cfg(target_os = "macos")]
 pub fn get_memory() -> Result<Memory, Error> {
     let count = 38;

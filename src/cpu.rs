@@ -14,9 +14,26 @@ use std::{
     io::{prelude::*, BufReader},
 };
 
-/// Return the first cpu_freq as f64.
+/// Get the cpufreq as f64.
+///
+/// On linux it will return the first frequency it see from `/proc/cpuinfo` (key: cpu MHz).
+///
+/// And on macOS it will make a syscall which will return the cpufreq (macOS doesn't seems to have per-core clock).
+/// 
+/// # Exemples
+/// ```
+/// use sys_metrics::cpu::get_cpufreq;
+///
+/// let cpufreq: f64 = match get_cpufreq() {
+///     Ok(val) => val,
+///     Err(x) => panic!(x),
+/// };
+///
+/// // Should print your cpufreq as mHz
+/// println!("{}", cpufreq);
+/// ```
 #[cfg(target_os = "linux")]
-pub fn get_avg_cpufreq() -> Result<f64, Error> {
+pub fn get_cpufreq() -> Result<f64, Error> {
     let file = File::open("/proc/cpuinfo")?;
     let file = BufReader::with_capacity(1024, file);
 
@@ -37,9 +54,8 @@ pub fn get_avg_cpufreq() -> Result<f64, Error> {
     ))
 }
 
-/// Return the avg cpu_freq as f64.
 #[cfg(target_os = "macos")]
-pub fn get_avg_cpufreq() -> Result<f64, Error> {
+pub fn get_cpufreq() -> Result<f64, Error> {
     let mut data: c_uint = 0;
     let mib = [6, 15];
 
@@ -61,7 +77,26 @@ pub fn get_avg_cpufreq() -> Result<f64, Error> {
     }
 }
 
-/// Return the LoadAvg on any Unix system.
+/// Returns the [LoadAvg] over the last 1, 5 and 15 minutes.
+///
+/// In Linux, the [LoadAvg] is technically believed to be a running average 
+/// of processes in it’s (kernel) execution queue tagged as running or uninterruptible.
+///
+/// # Exemples
+/// ```
+/// use sys_metrics::LoadAvg;
+/// use sys_metrics::cpu::get_loadavg;
+///
+/// let loadavg: LoadAvg = match get_loadavg() {
+///     Ok(val) => val,
+///     Err(x) => panic!(x),
+/// };
+///
+/// // Should print your system load avg
+/// println!("{:?}", loadavg);
+/// ```
+///
+/// [LoadAvg]: ../struct.LoadAvg.html
 #[cfg(target_family = "unix")]
 pub fn get_loadavg() -> Result<LoadAvg, Error> {
     let mut data: [c_double; 3] = [0.0, 0.0, 0.0];

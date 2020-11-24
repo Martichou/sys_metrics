@@ -9,13 +9,10 @@ fn all_gather() {
     };
 
     {
-        let _uuid = get_uuid().expect("Cannot retrieve UUID");
-        let _cpu_freq = get_avg_cpufreq();
-        let _disks = get_partitions_info();
-        let _iostats = match get_iostats() {
-            Ok(val) => Some(val),
-            Err(_) => None,
-        };
+        let _uuid = get_uuid();
+        let _cpu_freq = get_cpufreq();
+        let _disks = get_partitions_physical();
+        let _iostats = get_iostats();
         let _users = get_users();
     };
 }

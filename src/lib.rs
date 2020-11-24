@@ -1,11 +1,17 @@
 //! `sys_metrics` is a crate used to get a system's information.
 
+/// Functions related to CPU stats
 pub mod cpu;
+/// Functions related to disks stats
 pub mod disks;
+/// Functions related to memory stats
 pub mod memory;
+/// Functions related to diverse stats
 pub mod miscs;
 mod models;
+/// Functions related to network stats
 pub mod network;
+/// Functions related to users informations
 pub mod users;
 
 pub use models::*;

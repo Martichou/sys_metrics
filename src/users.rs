@@ -100,9 +100,11 @@ impl Default for utmp {
     }
 }
 
-/// Get the currently logged user from /var/run/utmp.
-/// UTMP Struct is the same as the one from C utmp.h.
-/// The check to see if the utmp struct is from a user respect the C standarts.
+/// Get the currently logged users.
+///
+/// On linux it will get them from `/var/run/utmp`. It will use the C's UTMP Struct and the unsafe read C's function.
+///
+/// On macOS it will use unsafes call to multiple OSX specific functions [setutxent, getutxent] (the struct is UTMPX for the inner usage).
 #[cfg(target_os = "linux")]
 pub fn get_users() -> Option<Vec<String>> {
     let utmp_file = match File::open(UTMP_FILE_PATH) {
@@ -131,10 +133,6 @@ pub fn get_users() -> Option<Vec<String>> {
     Some(users)
 }
 
-/// Get the currently logged user from /var/run/utmpx (I suppose).
-/// UTMPX Struct is the same as the one from C utmpx.h.
-/// MacOS implement this a bit differently than linux.
-/// So this version uses MacOS's function [setutxent, getutxent].
 #[cfg(target_os = "macos")]
 pub fn get_users() -> Option<Vec<String>> {
     let mut users: Vec<String> = Vec::new();
