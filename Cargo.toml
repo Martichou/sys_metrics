@@ -6,7 +6,7 @@ edition = "2018"
 
 repository = "https://github.com/Martichou/sys_metrics"
 description = "Cross-platform library to gather stats/information from the host"
-keywords = ["metrics", "system", "information", "sysinfo", "psutil", "stats", "heim"]
+keywords = ["metrics", "sysinfo", "psutil", "stats", "heim"]
 license = "AGPL-3.0"
 readme = "README.md"
 
