@@ -1,0 +1,57 @@
+name: Linux
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: cargo check
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v2
+
+    - name: Run tests
+      run: cargo test
+
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v2
+    
+    - name: Generate Cargo.lock
+      uses: actions-rs/cargo@v1
+      with:
+        command: generate-lockfile
+
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target/debug
+        key: ${{ runner.os }}-cargo-bench-${{ hashFiles('**/Cargo.lock') }}
+
+    - uses: actions/cache@v2
+      with:
+        path: |
+          target/criterion
+        key: ${{ runner.os }}-cargo-bench-result
+
+    - name: Run benches
+      run: cargo bench
