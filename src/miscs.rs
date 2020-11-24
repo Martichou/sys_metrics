@@ -52,7 +52,7 @@ fn get_uptime() -> Result<Duration, Error> {
     let mut data = std::mem::MaybeUninit::<timeval>::uninit();
     let mib = [1, 21];
 
-    let ret = unsafe {
+    if unsafe {
         sysctl(
             &mib[0] as *const _ as *mut _,
             mib.len() as u32,
@@ -61,14 +61,13 @@ fn get_uptime() -> Result<Duration, Error> {
             std::ptr::null_mut(),
             0,
         )
-    };
-
-    if ret < 0 {
-        Err(Error::new(ErrorKind::Other, "Invalid return for sysctl"))
-    } else {
-        let data = unsafe { data.assume_init() };
-        Ok(Duration::from_secs(data.tv_sec as u64))
+    } < 0
+    {
+        return Err(Error::last_os_error());
     }
+
+    let data = unsafe { data.assume_init() };
+    Ok(Duration::from_secs(data.tv_sec as u64))
 }
 
 /// Get some basic [HostInfo] of the host.

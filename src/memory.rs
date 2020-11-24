@@ -63,17 +63,15 @@ pub fn get_memory() -> Result<Memory, Error> {
     unsafe {
         let port = mach_host_self();
         let mut vm_stats = std::mem::MaybeUninit::<vm_statistics64>::uninit();
-        // GET HOST INFO ABOUT MEMORY
-        let result = host_statistics64(port, 4, &mut vm_stats as *mut _ as host_info64_t, &count);
-        // FREE THE PORT USED
-        let port_result = mach_port_deallocate(mach_task_self(), port);
-        if port_result != 0 {
+        // GET HOST INFO ABOUT MEMORY & CHECK THE RETURN VALUE OF host_statistics64
+        if host_statistics64(port, 4, &mut vm_stats as *mut _ as host_info64_t, &count) != 0 {
             return Err(Error::last_os_error());
         }
-        // CHECK THE RETURN VALUE OF host_statistics64
-        if result != 0 {
+        // FREE THE PORT USED & CHECK THE RESULT OF FREE THE PORT
+        if mach_port_deallocate(mach_task_self(), port) != 0 {
             return Err(Error::last_os_error());
         }
+        // ASSUME VM_STATS IS INIT
         let vm_stats = vm_stats.assume_init();
 
         // TOTAL VIRTUAL MEMORY

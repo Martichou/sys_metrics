@@ -109,10 +109,7 @@ impl Default for utmp {
 #[cfg(target_os = "linux")]
 pub fn get_users() -> Result<Vec<String>, Error> {
     let mut users: Vec<String> = Vec::new();
-    let utmp_file = match File::open(UTMP_FILE_PATH) {
-        Ok(val) => val,
-        Err(x) => return Err(x),
-    };
+    let utmp_file = File::open(UTMP_FILE_PATH)?;
     let mut utmp_struct: utmp = Default::default();
     let buffer: *mut c_void = &mut utmp_struct as *mut _ as *mut c_void;
 

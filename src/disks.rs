@@ -64,10 +64,7 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
             continue;
         }
         let m_p = PathBuf::from(unescape(fields[1]).unwrap());
-        let usage: (u64, u64) = match disk_usage(&m_p) {
-            Ok(val) => val,
-            Err(x) => return Err(x),
-        };
+        let usage: (u64, u64) = disk_usage(&m_p)?;
         vdisks.push(Disks {
             name: fields[0].to_owned(),
             mount_point: m_p.into_os_string().into_string().unwrap(),
@@ -91,9 +88,11 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
             2,
         )
     };
+
     if result < 0 {
         return Err(Error::last_os_error());
     }
+
     unsafe {
         mounts.set_len(result as usize);
     }

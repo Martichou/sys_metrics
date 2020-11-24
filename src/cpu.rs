@@ -7,11 +7,11 @@ use libc::{c_uint, c_void, sysctl};
 #[cfg(target_family = "unix")]
 use models::LoadAvg;
 #[cfg(target_family = "unix")]
-use std::io::{Error, ErrorKind};
+use std::io::Error;
 #[cfg(target_os = "linux")]
 use std::{
     fs::File,
-    io::{prelude::*, BufReader},
+    io::{prelude::*, BufReader, ErrorKind},
 };
 
 /// Get the cpufreq as f64.
@@ -59,7 +59,7 @@ pub fn get_cpufreq() -> Result<f64, Error> {
     let mut data: c_uint = 0;
     let mib = [6, 15];
 
-    let ret = unsafe {
+    if unsafe {
         sysctl(
             &mib[0] as *const _ as *mut _,
             mib.len() as u32,
@@ -68,13 +68,12 @@ pub fn get_cpufreq() -> Result<f64, Error> {
             std::ptr::null_mut(),
             0,
         )
-    };
-
-    if ret < 0 {
-        Err(Error::new(ErrorKind::Other, "Invalid return for sysctl"))
-    } else {
-        Ok(data as f64)
+    } < 0
+    {
+        return Err(Error::last_os_error());
     }
+
+    Ok(data as f64)
 }
 
 /// Returns the [LoadAvg] over the last 1, 5 and 15 minutes.
@@ -102,10 +101,7 @@ pub fn get_loadavg() -> Result<LoadAvg, Error> {
     let mut data: [c_double; 3] = [0.0, 0.0, 0.0];
 
     if unsafe { getloadavg(data.as_mut_ptr(), 3) } == -1 {
-        return Err(Error::new(
-            ErrorKind::Other,
-            "Invalid return for getloadavg",
-        ));
+        return Err(Error::last_os_error());
     }
 
     Ok(LoadAvg {
