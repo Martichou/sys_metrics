@@ -11,6 +11,7 @@
 //! ## Quick start
 //! ```
 //! use sys_metrics::{cpu::*, disks::*, miscs::*, users::*};
+//! 
 //! fn main() -> Result<(), std::io::Error> {
 //!     let host_info = match get_host_info() {
 //!         Ok(val) => val,
