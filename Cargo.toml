@@ -61,5 +61,9 @@ name = "network_bench"
 harness = false
 
 [[bench]]
+name = "sys_bench"
+harness = false
+
+[[bench]]
 name = "users_bench"
 harness = false

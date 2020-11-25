@@ -1,11 +1,14 @@
 #[cfg(target_os = "linux")]
 use super::read_and_trim;
+#[cfg(target_os = "macos")]
+use super::to_str;
 
 #[cfg(target_os = "macos")]
 use crate::cpu;
 #[cfg(target_os = "macos")]
 use crate::memory;
 use crate::models;
+use crate::sys;
 
 #[cfg(target_os = "macos")]
 use core_foundation_sys::{
@@ -27,24 +30,10 @@ use memory::get_memory;
 use models::HostInfo;
 #[cfg(target_os = "linux")]
 use models::{LoadAvg, Memory};
-use nix::sys;
-#[cfg(target_os = "macos")]
-use std::ffi::CStr;
 use std::io::{Error, ErrorKind};
 #[cfg(target_os = "macos")]
 use std::time::Duration;
-
-/// Get the os version (distro + release).
-pub fn get_os_version() -> String {
-    let x = sys::utsname::uname();
-    x.sysname().to_owned() + "/" + x.release()
-}
-
-/// Get the hostname.
-pub fn get_hostname() -> String {
-    let x = sys::utsname::uname();
-    x.nodename().to_owned()
-}
+use sys::{get_hostname_from_uname, get_os_version_from_uname, get_uname};
 
 /// Return the uptime of the host for macOS.
 #[cfg(target_os = "macos")]
@@ -82,8 +71,8 @@ fn get_uptime() -> Result<Duration, Error> {
 /// [HostInfo]: ../struct.HostInfo.html
 #[cfg(target_os = "linux")]
 pub fn get_host_info() -> Result<HostInfo, Error> {
-    let x = sys::utsname::uname();
-    let y = match sys::sysinfo::sysinfo() {
+    let x = get_uname()?;
+    let y = match nix::sys::sysinfo::sysinfo() {
         Ok(val) => val,
         Err(x) => return Err(Error::new(ErrorKind::Other, x)),
     };
@@ -105,14 +94,14 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
         loadavg,
         memory,
         uptime,
-        os_version: x.sysname().to_owned() + "/" + x.release(),
-        hostname: x.nodename().to_owned(),
+        os_version: get_os_version_from_uname(&x),
+        hostname: get_hostname_from_uname(&x),
     })
 }
 
 #[cfg(target_os = "macos")]
 pub fn get_host_info() -> Result<HostInfo, Error> {
-    let x = sys::utsname::uname();
+    let x = get_uname()?;
     let uptime = get_uptime().unwrap().as_secs();
     let loadavg = get_loadavg().unwrap();
     let memory = get_memory()?;
@@ -121,8 +110,8 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
         loadavg,
         memory,
         uptime,
-        os_version: x.sysname().to_owned() + "/" + x.release(),
-        hostname: x.nodename().to_owned(),
+        os_version: get_os_version_from_uname(&x),
+        hostname: get_hostname_from_uname(&x),
     })
 }
 
@@ -172,9 +161,6 @@ pub fn get_uuid() -> Result<String, Error> {
         }
         CFRelease(uuid as *mut c_void);
 
-        match CStr::from_ptr(buffer.as_mut_ptr()).to_str() {
-            Ok(val) => Ok(val.to_owned()),
-            Err(x) => Err(Error::new(ErrorKind::Other, x)),
-        }
+        Ok(to_str(buffer.as_ptr()).to_owned())
     }
 }

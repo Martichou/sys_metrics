@@ -16,7 +16,7 @@
 //!         Ok(val) => val,
 //!         Err(x) => return Err(x),
 //!     };
-//! 
+//!
 //!     let _uuid = get_uuid().expect("Cannot retrieve UUID");
 //!     let _os = host_info.os_version;
 //!     let _hostname = host_info.hostname;
@@ -36,7 +36,7 @@
 //!     };
 //!     let _memory = host_info.memory;
 //!     let _users = get_users();
-//! 
+//!
 //!     Ok(())
 //! }
 //! ```
@@ -52,6 +52,7 @@ pub mod miscs;
 mod models;
 /// Functions related to network stats
 pub mod network;
+pub mod sys;
 /// Functions related to users informations
 pub mod users;
 
@@ -61,8 +62,6 @@ pub use models::*;
 use mach::vm_types::integer_t;
 #[cfg(target_os = "linux")]
 use std::fs;
-
-use nix::sys;
 use std::io::{Error, ErrorKind};
 use std::path::Path;
 
@@ -123,7 +122,7 @@ pub(crate) fn disk_usage<P>(path: P) -> Result<(u64, u64), Error>
 where
     P: AsRef<Path>,
 {
-    let statvfs = match sys::statvfs::statvfs(path.as_ref()) {
+    let statvfs = match nix::sys::statvfs::statvfs(path.as_ref()) {
         Ok(val) => val,
         Err(x) => return Err(Error::new(ErrorKind::Other, x)),
     };
@@ -131,4 +130,21 @@ where
     let free = statvfs.blocks_available() as u64 * statvfs.fragment_size() as u64;
 
     Ok((total, free))
+}
+
+#[allow(dead_code)]
+#[inline]
+pub(crate) fn to_str_mut<'a>(s: *mut libc::c_char) -> &'a str {
+    unsafe {
+        let res = std::ffi::CStr::from_ptr(s).to_bytes();
+        std::str::from_utf8_unchecked(res)
+    }
+}
+
+#[inline]
+pub(crate) fn to_str<'a>(s: *const libc::c_char) -> &'a str {
+    unsafe {
+        let res = std::ffi::CStr::from_ptr(s).to_bytes();
+        std::str::from_utf8_unchecked(res)
+    }
 }

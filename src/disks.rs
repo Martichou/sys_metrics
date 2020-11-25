@@ -1,5 +1,7 @@
 use super::disk_usage;
 use super::is_physical_filesys;
+#[cfg(target_os = "macos")]
+use super::to_str;
 
 use crate::models;
 
@@ -99,26 +101,16 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
 
     let mut vdisks: Vec<Disks> = Vec::with_capacity(expected_len as usize);
     for stat in mounts {
-        if !is_physical_filesys(unsafe {
-            &CStr::from_ptr(stat.f_fstypename.as_ptr()).to_string_lossy()
-        }) {
+        if !is_physical_filesys(to_str(stat.f_fstypename.as_ptr())) {
             continue;
         }
-        let m_p = PathBuf::from(unsafe {
-            CStr::from_ptr(stat.f_mntonname.as_ptr())
-                .to_string_lossy()
-                .to_string()
-        });
+        let m_p = PathBuf::from(to_str(stat.f_mntonname.as_ptr()).to_owned());
         let usage: (u64, u64) = match disk_usage(&m_p) {
             Ok(val) => val,
             Err(x) => return Err(x),
         };
         vdisks.push(Disks {
-            name: unsafe {
-                CStr::from_ptr(stat.f_mntfromname.as_ptr())
-                    .to_string_lossy()
-                    .to_string()
-            },
+            name: to_str(stat.f_mntfromname.as_ptr()).to_owned(),
             mount_point: m_p.into_os_string().into_string().unwrap(),
             total_space: usage.0 / 100000,
             avail_space: usage.1 / 100000,
