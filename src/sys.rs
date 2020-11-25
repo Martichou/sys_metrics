@@ -1,9 +1,14 @@
 //! ## Example
 //! ```
-//! let uts = get_uname()?;
-//! 
-//! let os_version = get_os_version_from_uname(&uts);
-//! let hostname = get_hostname_from_uname(&uts);
+//! use sys_metrics::sys::*;
+//!
+//! fn main() -> Result<(), std::io::Error> {
+//!     let uts = get_uname()?;
+//!
+//!     let os_version = get_os_version_from_uname(&uts);
+//!     let hostname = get_hostname_from_uname(&uts);
+//!     Ok(())
+//! }
 //! ```
 
 use super::to_str;
