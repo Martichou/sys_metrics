@@ -21,9 +21,9 @@ use io_kit_sys::{
 };
 #[cfg(target_os = "macos")]
 use libc::c_char;
-use models::{Disks, IoStats};
 #[cfg(target_os = "macos")]
-use nix::libc::statfs;
+use libc::statfs;
+use models::{Disks, IoStats};
 #[cfg(target_os = "macos")]
 use std::ffi::CStr;
 #[cfg(target_family = "unix")]
