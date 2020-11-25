@@ -73,6 +73,8 @@ pub fn get_memory() -> Result<Memory, Error> {
         }
         // ASSUME VM_STATS IS INIT
         let vm_stats = vm_stats.assume_init();
+        // AVAILABLE VIRT MEMORY
+        let virt_avail = (vm_stats.active_count + vm_stats.free_count) as u64 * (*PAGE_SIZE);
 
         // TOTAL VIRTUAL MEMORY
         let mut name: [i32; 2] = [6, 24];
@@ -89,9 +91,6 @@ pub fn get_memory() -> Result<Memory, Error> {
         {
             return Err(Error::last_os_error());
         }
-        // DEFINE PAGE SIZE FOR MEMORY
-        // AVAILABLE VIRT MEMORY
-        let virt_avail = (vm_stats.active_count + vm_stats.free_count) as u64 * (*PAGE_SIZE);
 
         // SWAP MEMORY
         let mut name: [i32; 2] = [2, 5];
