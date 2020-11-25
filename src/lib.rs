@@ -59,11 +59,14 @@ pub mod users;
 
 pub use models::*;
 
+use libc::{c_char, statvfs, PATH_MAX};
 #[cfg(target_os = "macos")]
 use mach::vm_types::integer_t;
+use std::ffi::CStr;
 #[cfg(target_os = "linux")]
 use std::fs;
 use std::io::{Error, ErrorKind};
+use std::os::unix::ffi::OsStrExt;
 use std::path::Path;
 
 #[allow(non_camel_case_types)]
@@ -118,34 +121,49 @@ pub(crate) fn is_physical_filesys(filesysteme: &str) -> bool {
 }
 
 /// Return the total/free space of a Disk from it's path (mount_point).
-/// For both Linux and macOS.
 pub(crate) fn disk_usage<P>(path: P) -> Result<(u64, u64), Error>
 where
     P: AsRef<Path>,
 {
-    let statvfs = match nix::sys::statvfs::statvfs(path.as_ref()) {
-        Ok(val) => val,
-        Err(x) => return Err(Error::new(ErrorKind::Other, x)),
-    };
-    let total = statvfs.blocks() as u64 * statvfs.fragment_size() as u64;
-    let free = statvfs.blocks_available() as u64 * statvfs.fragment_size() as u64;
+    let mut statvfs = std::mem::MaybeUninit::<statvfs>::uninit();
+
+    let mpath = path.as_ref().as_os_str().as_bytes();
+    if mpath.len() >= PATH_MAX as usize {
+        return Err(Error::new(ErrorKind::Other, "Invalid path lenght"));
+    }
+    let mut buf = [0u8; PATH_MAX as usize];
+
+    unsafe {
+        std::ptr::copy_nonoverlapping(mpath.as_ptr(), buf.as_mut_ptr(), mpath.len());
+        if libc::statvfs(
+            CStr::from_ptr(buf.as_ptr() as *const c_char).as_ptr(),
+            statvfs.as_mut_ptr(),
+        ) == -1
+        {
+            return Err(Error::last_os_error());
+        }
+    }
+
+    let statvfs = unsafe { statvfs.assume_init() };
+    let total = statvfs.f_blocks as u64 * statvfs.f_bsize as u64;
+    let free = statvfs.f_bavail as u64 * statvfs.f_bsize as u64;
 
     Ok((total, free))
 }
 
 #[allow(dead_code)]
 #[inline]
-pub(crate) fn to_str_mut<'a>(s: *mut libc::c_char) -> &'a str {
+pub(crate) fn to_str_mut<'a>(s: *mut c_char) -> &'a str {
     unsafe {
-        let res = std::ffi::CStr::from_ptr(s).to_bytes();
+        let res = CStr::from_ptr(s).to_bytes();
         std::str::from_utf8_unchecked(res)
     }
 }
 
 #[inline]
-pub(crate) fn to_str<'a>(s: *const libc::c_char) -> &'a str {
+pub(crate) fn to_str<'a>(s: *const c_char) -> &'a str {
     unsafe {
-        let res = std::ffi::CStr::from_ptr(s).to_bytes();
+        let res = CStr::from_ptr(s).to_bytes();
         std::str::from_utf8_unchecked(res)
     }
 }
