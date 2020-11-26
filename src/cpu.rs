@@ -115,7 +115,7 @@ pub fn get_loadavg() -> Result<LoadAvg, Error> {
 ///
 /// On linux it will gather the info from libc's sysconf or sched_getaffinity as a fallback.
 ///
-/// And on macOS it will make a syscall too sysctl with hw.logicalcpu.
+/// And on macOS it will make a syscall to sysctl with hw.logicalcpu.
 #[cfg(target_os = "linux")]
 pub fn get_cpu_logical_count() -> Result<i64, Error> {
     let cpus = unsafe { libc::sysconf(libc::_SC_NPROCESSORS_ONLN) };
