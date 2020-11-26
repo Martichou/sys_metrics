@@ -123,7 +123,9 @@ pub fn get_cpu_logical_count() -> Result<i64, Error> {
         return Ok(cpus);
     } else {
         let mut set: libc::cpu_set_t = unsafe { std::mem::zeroed() };
-        if unsafe { libc::sched_getaffinity(0, std::mem::size_of::<libc::cpu_set_t>(), &mut set) } == 0 {
+        if unsafe { libc::sched_getaffinity(0, std::mem::size_of::<libc::cpu_set_t>(), &mut set) }
+            == 0
+        {
             let mut count: u32 = 0;
             for i in 0..libc::CPU_SETSIZE as usize {
                 if unsafe { libc::CPU_ISSET(i, &set) } {
