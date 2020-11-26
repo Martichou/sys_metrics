@@ -3,9 +3,7 @@ use super::read_and_trim;
 #[cfg(target_os = "macos")]
 use super::to_str;
 
-#[cfg(target_os = "macos")]
 use crate::cpu;
-#[cfg(target_os = "macos")]
 use crate::memory;
 use crate::models;
 use crate::sys;
@@ -16,8 +14,6 @@ use core_foundation_sys::{
     string::{CFStringGetCString, CFStringRef},
 };
 #[cfg(target_os = "macos")]
-use cpu::get_loadavg;
-#[cfg(target_os = "macos")]
 use io_kit_sys::*;
 #[cfg(target_os = "macos")]
 use io_kit_sys::{kIOMasterPortDefault, keys::kIOPlatformUUIDKey, IOServiceMatching};
@@ -25,15 +21,9 @@ use io_kit_sys::{kIOMasterPortDefault, keys::kIOPlatformUUIDKey, IOServiceMatchi
 use libc::c_char;
 #[cfg(target_os = "macos")]
 use libc::{c_void, sysctl, timeval};
-#[cfg(target_os = "macos")]
-use memory::get_memory;
 use models::HostInfo;
-#[cfg(target_os = "linux")]
-use models::{LoadAvg, Memory};
 use std::io::{Error, ErrorKind};
-#[cfg(target_os = "macos")]
 use std::time::Duration;
-use sys::{get_hostname_from_uname, get_os_version_from_uname, get_uname};
 
 /// Return the uptime of the host for macOS.
 #[cfg(target_os = "macos")]
@@ -59,11 +49,17 @@ fn get_uptime() -> Result<Duration, Error> {
     Ok(Duration::from_secs(data.tv_sec as u64))
 }
 
+#[inline]
+#[cfg(target_os = "linux")]
+fn get_uptime_from_sysinfo(y: &libc::sysinfo) -> Duration {
+    Duration::from_secs(std::cmp::max(y.uptime, 0) as u64)
+}
+
 /// Get some basic [HostInfo] of the host.
 ///
-/// On linux and macOS it will get the `os_version` and `hostname` from nix::sys's uname.
+/// On linux and macOS it will get the `os_version` and `hostname` from uname.
 ///
-/// For the `uptime`/`loadavg`/`memory` on linux it will get them from nix::sys's sysinfo.
+/// For the `uptime`/`loadavg`/`memory` on linux it will get them from sysinfo.
 /// But on macOS it will use the crate [get_loadavg] and [get_memory] and a special get_uptime function using an unsafe syscall.
 ///
 /// [get_loadavg]: ../cpu/fn.get_loadavg.html
@@ -71,47 +67,31 @@ fn get_uptime() -> Result<Duration, Error> {
 /// [HostInfo]: ../struct.HostInfo.html
 #[cfg(target_os = "linux")]
 pub fn get_host_info() -> Result<HostInfo, Error> {
-    let x = get_uname()?;
-    let y = match nix::sys::sysinfo::sysinfo() {
+    let x = sys::get_uname()?;
+    let y = match sys::sysinfo() {
         Ok(val) => val,
         Err(x) => return Err(Error::new(ErrorKind::Other, x)),
     };
-    let uptime = y.uptime().as_secs();
-    let loadavg_raw = y.load_average();
-    let loadavg = LoadAvg {
-        one: loadavg_raw.0,
-        five: loadavg_raw.1,
-        fifteen: loadavg_raw.2,
-    };
-    let memory = Memory {
-        total_virt: y.ram_total(),
-        total_swap: y.swap_total(),
-        avail_virt: y.ram_unused(),
-        avail_swap: y.swap_free(),
-    };
 
     Ok(HostInfo {
-        loadavg,
-        memory,
-        uptime,
-        os_version: get_os_version_from_uname(&x),
-        hostname: get_hostname_from_uname(&x),
+        loadavg: cpu::get_loadavg_from_sysinfo(&y),
+        memory: memory::get_memory_from_sysinfo(&y),
+        uptime: get_uptime_from_sysinfo(&y).as_secs(),
+        os_version: sys::get_os_version_from_uname(&x),
+        hostname: sys::get_hostname_from_uname(&x),
     })
 }
 
 #[cfg(target_os = "macos")]
 pub fn get_host_info() -> Result<HostInfo, Error> {
-    let x = get_uname()?;
-    let uptime = get_uptime().unwrap().as_secs();
-    let loadavg = get_loadavg().unwrap();
-    let memory = get_memory()?;
+    let x = sys::get_uname()?;
 
     Ok(HostInfo {
-        loadavg,
-        memory,
-        uptime,
-        os_version: get_os_version_from_uname(&x),
-        hostname: get_hostname_from_uname(&x),
+        loadavg: cpu::get_loadavg().unwrap(),
+        memory: memory::get_memory()?,
+        uptime: get_uptime().unwrap().as_secs(),
+        os_version: sys::get_os_version_from_uname(&x),
+        hostname: sys::get_hostname_from_uname(&x),
     })
 }
 

@@ -111,6 +111,16 @@ pub fn get_loadavg() -> Result<LoadAvg, Error> {
     })
 }
 
+#[inline]
+#[cfg(target_os = "linux")]
+pub(crate) fn get_loadavg_from_sysinfo(y: &libc::sysinfo) -> LoadAvg {
+    LoadAvg {
+        one: y.loads[0] as f64 / (1 << libc::SI_LOAD_SHIFT) as f64,
+        five: y.loads[1] as f64 / (1 << libc::SI_LOAD_SHIFT) as f64,
+        fifteen: y.loads[2] as f64 / (1 << libc::SI_LOAD_SHIFT) as f64,
+    }
+}
+
 /// Return the number of logical core the system has.
 ///
 /// On linux it will gather the info from libc's sysconf or sched_getaffinity as a fallback.

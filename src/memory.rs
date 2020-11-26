@@ -2,6 +2,8 @@
 use super::{host_flavor_t, host_info64_t, PAGE_SIZE};
 
 use crate::models;
+#[cfg(target_os = "linux")]
+use crate::sys;
 
 #[cfg(target_os = "macos")]
 use mach::{
@@ -14,8 +16,6 @@ use mach::{
 #[cfg(target_os = "macos")]
 use models::vm_statistics64;
 use models::Memory;
-#[cfg(target_os = "linux")]
-use nix::sys;
 use std::io::Error;
 #[cfg(target_os = "linux")]
 use std::io::ErrorKind;
@@ -36,24 +36,35 @@ extern "C" {
 ///
 /// Only contains the virtual/swap memory total/available.
 ///
-/// On linux it will get them from the nix::sys crate.
+/// On linux it will get them from the sysinfo.
 ///
 /// On macOS it will use unsafe syscall due to specific OSX implementation.
 ///
 /// [Memory]: ../struct.Memory.html
 #[cfg(target_os = "linux")]
 pub fn get_memory() -> Result<Memory, Error> {
-    let y = match sys::sysinfo::sysinfo() {
+    let y = match sys::sysinfo() {
         Ok(val) => val,
         Err(x) => return Err(Error::new(ErrorKind::Other, x)),
     };
 
     Ok(Memory {
-        total_virt: y.ram_total(),
-        total_swap: y.swap_total(),
-        avail_virt: y.ram_unused(),
-        avail_swap: y.swap_free(),
+        total_virt: y.totalram as u64 * y.mem_unit as u64,
+        total_swap: y.totalswap as u64 * y.mem_unit as u64,
+        avail_virt: y.freeram as u64 * y.mem_unit as u64,
+        avail_swap: y.freeswap as u64 * y.mem_unit as u64,
     })
+}
+
+#[inline]
+#[cfg(target_os = "linux")]
+pub(crate) fn get_memory_from_sysinfo(y: &libc::sysinfo) -> Memory {
+    Memory {
+        total_virt: y.totalram as u64 * y.mem_unit as u64,
+        total_swap: y.totalswap as u64 * y.mem_unit as u64,
+        avail_virt: y.freeram as u64 * y.mem_unit as u64,
+        avail_swap: y.freeswap as u64 * y.mem_unit as u64,
+    }
 }
 
 #[cfg(target_os = "macos")]
