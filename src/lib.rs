@@ -10,7 +10,7 @@
 //!
 //! ## Quick start
 //! ```
-//! use sys_metrics::{cpu::*, disks::*, miscs::*, users::*};
+//! use sys_metrics::{cpu::*, disks::*, host::*};
 //!
 //! fn main() -> Result<(), std::io::Error> {
 //!     let host_info = match get_host_info() {
@@ -53,10 +53,7 @@ pub mod memory;
 mod models;
 /// Functions related to network stats
 pub mod network;
-pub mod sys;
 /// Functions related to users informations
-pub mod users;
-
 pub use models::*;
 
 use libc::{c_char, statvfs, PATH_MAX};

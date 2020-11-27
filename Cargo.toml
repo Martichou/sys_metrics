@@ -52,17 +52,9 @@ name = "memory_bench"
 harness = false
 
 [[bench]]
-name = "miscs_bench"
+name = "host_bench"
 harness = false
 
 [[bench]]
 name = "network_bench"
-harness = false
-
-[[bench]]
-name = "sys_bench"
-harness = false
-
-[[bench]]
-name = "users_bench"
 harness = false

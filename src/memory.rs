@@ -1,9 +1,9 @@
 #[cfg(target_os = "macos")]
 use super::{host_flavor_t, host_info64_t, PAGE_SIZE};
 
-use crate::models;
 #[cfg(target_os = "linux")]
-use crate::sys;
+use crate::host;
+use crate::models;
 
 #[cfg(target_os = "macos")]
 use mach::{
@@ -43,7 +43,7 @@ extern "C" {
 /// [Memory]: ../struct.Memory.html
 #[cfg(target_os = "linux")]
 pub fn get_memory() -> Result<Memory, Error> {
-    let y = match sys::sysinfo() {
+    let y = match host::sysinfo() {
         Ok(val) => val,
         Err(x) => return Err(Error::new(ErrorKind::Other, x)),
     };

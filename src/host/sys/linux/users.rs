@@ -1,37 +1,18 @@
-use super::to_str;
+use crate::to_str;
 
-#[cfg(target_os = "linux")]
 use libc::{c_char, c_short, c_void, pid_t, read};
-#[cfg(target_os = "macos")]
-use libc::{getutxent, setutxent, utmpx};
-#[cfg(target_os = "linux")]
 use std::fs::File;
 use std::io::Error;
 use std::mem;
-#[cfg(target_os = "linux")]
 use std::os::unix::prelude::*;
 
-#[cfg(target_os = "linux")]
 const UT_LINESIZE: usize = 32;
-#[cfg(target_os = "linux")]
 const UT_NAMESIZE: usize = 32;
-#[cfg(target_os = "linux")]
 const UT_HOSTSIZE: usize = 256;
-#[cfg(target_os = "linux")]
-static UTMP_FILE_PATH: &str = "/var/run/utmp";
-#[cfg(target_os = "macos")]
-const _UTX_USERSIZE: usize = 256;
-#[cfg(target_os = "macos")]
-const _UTX_LINESIZE: usize = 32;
-#[cfg(target_os = "macos")]
-const _UTX_IDSIZE: usize = 4;
-#[cfg(target_os = "macos")]
-const _UTX_HOSTSIZE: usize = 256;
 
 #[doc(hidden)]
 #[repr(C)]
 #[derive(Debug)]
-#[cfg(target_os = "linux")]
 pub struct exit_status {
     pub e_termination: c_short,
     pub e_exit: c_short,
@@ -40,7 +21,6 @@ pub struct exit_status {
 #[doc(hidden)]
 #[repr(C)]
 #[derive(Debug)]
-#[cfg(not(target_os = "windows"))]
 pub struct ut_tv {
     pub tv_sec: i32,
     pub tv_usec: i32,
@@ -49,7 +29,6 @@ pub struct ut_tv {
 #[doc(hidden)]
 #[repr(C)]
 #[derive(Debug)]
-#[cfg(target_os = "linux")]
 pub struct utmp {
     pub ut_type: c_short,
     pub ut_pid: pid_t,
@@ -64,7 +43,6 @@ pub struct utmp {
     pub __glibc_reserved: [c_char; 20],
 }
 
-#[cfg(target_os = "linux")]
 impl Default for exit_status {
     fn default() -> exit_status {
         exit_status {
@@ -74,7 +52,6 @@ impl Default for exit_status {
     }
 }
 
-#[cfg(not(target_os = "windows"))]
 impl Default for ut_tv {
     fn default() -> ut_tv {
         ut_tv {
@@ -84,7 +61,6 @@ impl Default for ut_tv {
     }
 }
 
-#[cfg(target_os = "linux")]
 impl Default for utmp {
     fn default() -> utmp {
         utmp {
@@ -108,10 +84,9 @@ impl Default for utmp {
 /// On linux it will get them from `/var/run/utmp`. It will use the C's UTMP Struct and the unsafe read C's function.
 ///
 /// On macOS it will use unsafes call to multiple OSX specific functions [setutxent, getutxent] (the struct is UTMPX for the inner usage).
-#[cfg(target_os = "linux")]
 pub fn get_users() -> Result<Vec<String>, Error> {
     let mut users: Vec<String> = Vec::new();
-    let utmp_file = File::open(UTMP_FILE_PATH)?;
+    let utmp_file = File::open("/var/run/utmp")?;
     let mut utmp_struct: utmp = Default::default();
     let buffer: *mut c_void = &mut utmp_struct as *mut _ as *mut c_void;
 
@@ -124,32 +99,6 @@ pub fn get_users() -> Result<Vec<String>, Error> {
                 let csuser = to_str(cuser.as_ptr()).trim_matches('\0').to_owned();
                 users.push(csuser);
             }
-        }
-    }
-
-    Ok(users)
-}
-
-#[cfg(target_os = "macos")]
-pub fn get_users() -> Result<Vec<String>, Error> {
-    let mut users: Vec<String> = Vec::new();
-    #[allow(unused_assignments)]
-    let mut buffer: *mut utmpx = unsafe { mem::zeroed() };
-
-    unsafe {
-        setutxent();
-        buffer = getutxent();
-        while !buffer.is_null() {
-            let cbuffer = &*(buffer as *mut utmpx) as &utmpx;
-            let cuser = &*(&cbuffer.ut_user as *const [i8]);
-
-            if cuser[0] != 0 && cbuffer.ut_type == 7 {
-                let csuser = to_str(cuser.as_ptr()).trim_matches('\0').to_owned();
-                if !users.contains(&csuser) {
-                    users.push(csuser);
-                }
-            }
-            buffer = getutxent();
         }
     }
 
