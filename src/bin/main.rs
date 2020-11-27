@@ -1,4 +1,4 @@
-use sys_metrics::{cpu::*, disks::*, miscs::*, users::*};
+use sys_metrics::{cpu::*, disks::*, host::*, users::*};
 
 #[allow(unused_must_use)]
 fn main() {

@@ -46,10 +46,10 @@
 pub mod cpu;
 /// Functions related to disks stats
 pub mod disks;
+/// Functions related to diverse stats
+pub mod host;
 /// Functions related to memory stats
 pub mod memory;
-/// Functions related to diverse stats
-pub mod miscs;
 mod models;
 /// Functions related to network stats
 pub mod network;

@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
-    use sys_metrics::miscs::*;
+    use sys_metrics::host::*;
 
     #[test]
     fn test_host_info() {
