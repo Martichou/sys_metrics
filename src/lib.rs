@@ -51,8 +51,6 @@ pub mod host;
 /// Functions related to memory stats
 pub mod memory;
 mod models;
-/// Functions related to network stats
-pub mod network;
 /// Functions related to users informations
 pub use models::*;
 

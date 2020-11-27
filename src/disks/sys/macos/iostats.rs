@@ -1,124 +1,26 @@
-use super::disk_usage;
-use super::is_physical_filesys;
-#[cfg(target_os = "macos")]
-use super::to_str;
-
+use crate::disk_usage;
+use crate::is_physical_filesys;
 use crate::models;
+use crate::to_str;
 
-#[cfg(target_os = "macos")]
 use core_foundation_sys::{
     base::{kCFAllocatorDefault, CFRelease},
     dictionary::{CFDictionaryGetValueIfPresent, CFDictionaryRef},
     number::{CFNumberGetValue, CFNumberRef},
     string::{CFStringGetCString, CFStringRef},
 };
-#[cfg(target_os = "macos")]
 use io_kit_sys::{
     kIOMasterPortDefault,
     ret::kIOReturnSuccess,
     types::{io_iterator_t, io_registry_entry_t},
     IOServiceMatching, *,
 };
-#[cfg(target_os = "macos")]
-use libc::c_char;
-#[cfg(target_os = "macos")]
-use libc::statfs;
+use libc::{c_char, statfs};
 use models::{Disks, IoStats};
-#[cfg(target_os = "macos")]
 use std::ffi::CStr;
-#[cfg(target_family = "unix")]
 use std::io::Error;
-#[cfg(target_os = "macos")]
 use std::io::ErrorKind;
 use std::path::PathBuf;
-#[cfg(target_os = "linux")]
-use std::{
-    fs::File,
-    io::{BufRead, BufReader},
-};
-#[cfg(target_os = "linux")]
-use unescape::unescape;
-
-#[cfg(target_os = "macos")]
-extern "C" {
-    fn getfsstat64(buf: *mut statfs, bufsize: libc::c_int, flags: libc::c_int) -> libc::c_int;
-}
-
-/// Return a Vec of [Disks] with their minimal informations.
-///
-/// Contains `name`, `mount_point` and `total`/`free` space.
-///
-/// On linux it will get them from `/proc/mounts`.
-///
-/// On macOS it will use an unsafe call to `getfsstat64`.
-///
-/// [Disks]: ../struct.Disks.html
-#[cfg(target_os = "linux")]
-pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
-    let mut vdisks: Vec<Disks> = Vec::new();
-    let file = File::open("/proc/mounts")?;
-    let file = BufReader::with_capacity(6144, file);
-
-    for line in file.lines() {
-        let line = line.unwrap();
-        let fields = line.split_whitespace().collect::<Vec<&str>>();
-        if !is_physical_filesys(fields[2]) {
-            continue;
-        }
-        let m_p = PathBuf::from(unescape(fields[1]).unwrap());
-        let usage: (u64, u64) = disk_usage(&m_p)?;
-        vdisks.push(Disks {
-            name: fields[0].to_owned(),
-            mount_point: m_p.into_os_string().into_string().unwrap(),
-            total_space: usage.0 / 100000,
-            avail_space: usage.1 / 100000,
-        });
-    }
-
-    Ok(vdisks)
-}
-
-#[cfg(target_os = "macos")]
-pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
-    let expected_len = unsafe { getfsstat64(std::ptr::null_mut(), 0, 2) };
-    let mut mounts: Vec<statfs> = Vec::with_capacity(expected_len as usize);
-
-    let result = unsafe {
-        getfsstat64(
-            mounts.as_mut_ptr(),
-            std::mem::size_of::<statfs>() as libc::c_int * expected_len,
-            2,
-        )
-    };
-
-    if result < 0 {
-        return Err(Error::last_os_error());
-    }
-
-    unsafe {
-        mounts.set_len(result as usize);
-    }
-
-    let mut vdisks: Vec<Disks> = Vec::with_capacity(expected_len as usize);
-    for stat in mounts {
-        if !is_physical_filesys(to_str(stat.f_fstypename.as_ptr())) {
-            continue;
-        }
-        let m_p = PathBuf::from(to_str(stat.f_mntonname.as_ptr()).to_owned());
-        let usage: (u64, u64) = match disk_usage(&m_p) {
-            Ok(val) => val,
-            Err(x) => return Err(x),
-        };
-        vdisks.push(Disks {
-            name: to_str(stat.f_mntfromname.as_ptr()).to_owned(),
-            mount_point: m_p.into_os_string().into_string().unwrap(),
-            total_space: usage.0 / 100000,
-            avail_space: usage.1 / 100000,
-        });
-    }
-
-    Ok(vdisks)
-}
 
 /// Get basic [IoStats] info for each disks/partitions.
 ///
@@ -129,29 +31,6 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
 /// On macOS it will use unsafes call to multiple OSX specific functions.
 ///
 /// [IoStats]: ../struct.IoStats.html
-#[cfg(target_os = "linux")]
-pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
-    let mut viostats: Vec<IoStats> = Vec::new();
-    let file = File::open("/proc/diskstats")?;
-    let file = BufReader::with_capacity(2048, file);
-
-    for line in file.lines() {
-        let line = line.unwrap();
-        let fields = line.split_whitespace().collect::<Vec<&str>>();
-        if fields.len() < 14 {
-            continue;
-        }
-        viostats.push(IoStats {
-            device_name: fields[2].to_owned(),
-            bytes_read: fields[5].parse::<i64>().unwrap() * 512,
-            bytes_wrtn: fields[9].parse::<i64>().unwrap() * 512,
-        });
-    }
-
-    Ok(viostats)
-}
-
-#[cfg(target_os = "macos")]
 pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
     let mut viostats: Vec<IoStats> = Vec::new();
 
