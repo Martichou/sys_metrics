@@ -1,11 +1,7 @@
-#[cfg(target_os = "macos")]
-use super::{host_flavor_t, host_info64_t, PAGE_SIZE};
+use crate::{host_flavor_t, host_info64_t, PAGE_SIZE};
 
-#[cfg(target_os = "linux")]
-use crate::host;
 use crate::models;
 
-#[cfg(target_os = "macos")]
 use mach::{
     kern_return::kern_return_t,
     mach_port::mach_port_deallocate,
@@ -13,14 +9,10 @@ use mach::{
     message::mach_msg_type_number_t,
     traps::mach_task_self,
 };
-#[cfg(target_os = "macos")]
 use models::vm_statistics64;
 use models::Memory;
 use std::io::Error;
-#[cfg(target_os = "linux")]
-use std::io::ErrorKind;
 
-#[cfg(target_os = "macos")]
 extern "C" {
     fn mach_host_self() -> host_name_port_t;
 
@@ -41,33 +33,6 @@ extern "C" {
 /// On macOS it will use unsafe syscall due to specific OSX implementation.
 ///
 /// [Memory]: ../struct.Memory.html
-#[cfg(target_os = "linux")]
-pub fn get_memory() -> Result<Memory, Error> {
-    let y = match host::sysinfo() {
-        Ok(val) => val,
-        Err(x) => return Err(Error::new(ErrorKind::Other, x)),
-    };
-
-    Ok(Memory {
-        total_virt: y.totalram as u64 * y.mem_unit as u64,
-        total_swap: y.totalswap as u64 * y.mem_unit as u64,
-        avail_virt: y.freeram as u64 * y.mem_unit as u64,
-        avail_swap: y.freeswap as u64 * y.mem_unit as u64,
-    })
-}
-
-#[inline]
-#[cfg(target_os = "linux")]
-pub(crate) fn get_memory_from_sysinfo(y: &libc::sysinfo) -> Memory {
-    Memory {
-        total_virt: y.totalram as u64 * y.mem_unit as u64,
-        total_swap: y.totalswap as u64 * y.mem_unit as u64,
-        avail_virt: y.freeram as u64 * y.mem_unit as u64,
-        avail_swap: y.freeswap as u64 * y.mem_unit as u64,
-    }
-}
-
-#[cfg(target_os = "macos")]
 pub fn get_memory() -> Result<Memory, Error> {
     let count = 38;
     // ALLOCATE A PORT
