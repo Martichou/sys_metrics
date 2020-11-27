@@ -42,16 +42,17 @@
 //! }
 //! ```
 
-/// Functions related to CPU stats
+/// CPU information
 pub mod cpu;
-/// Functions related to disks stats
+/// Disks information
 pub mod disks;
-/// Functions related to diverse stats
+/// Host system information
 pub mod host;
-/// Functions related to memory stats
+/// Memory and swap information
 pub mod memory;
+
 mod models;
-/// Functions related to users informations
+
 pub use models::*;
 
 use libc::{c_char, statvfs, PATH_MAX};

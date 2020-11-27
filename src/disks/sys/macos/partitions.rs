@@ -3,23 +3,9 @@ use crate::is_physical_filesys;
 use crate::models;
 use crate::to_str;
 
-use core_foundation_sys::{
-    base::{kCFAllocatorDefault, CFRelease},
-    dictionary::{CFDictionaryGetValueIfPresent, CFDictionaryRef},
-    number::{CFNumberGetValue, CFNumberRef},
-    string::{CFStringGetCString, CFStringRef},
-};
-use io_kit_sys::{
-    kIOMasterPortDefault,
-    ret::kIOReturnSuccess,
-    types::{io_iterator_t, io_registry_entry_t},
-    IOServiceMatching, *,
-};
-use libc::{c_char, statfs};
-use models::{Disks, IoStats};
-use std::ffi::CStr;
+use libc::statfs;
+use models::Disks;
 use std::io::Error;
-use std::io::ErrorKind;
 use std::path::PathBuf;
 
 extern "C" {

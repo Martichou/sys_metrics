@@ -1,29 +1,14 @@
-#[cfg(target_os = "linux")]
-use crate::read_and_trim;
-#[cfg(target_os = "macos")]
 use crate::to_str;
 
-use crate::cpu;
-use crate::memory;
-use crate::models;
-use crate::sys;
-
-#[cfg(target_os = "macos")]
 use core_foundation_sys::{
     base::{kCFAllocatorDefault, CFRelease, CFTypeRef},
     string::{CFStringGetCString, CFStringRef},
 };
-#[cfg(target_os = "macos")]
 use io_kit_sys::*;
-#[cfg(target_os = "macos")]
 use io_kit_sys::{kIOMasterPortDefault, keys::kIOPlatformUUIDKey, IOServiceMatching};
-#[cfg(target_os = "macos")]
 use libc::c_char;
-#[cfg(target_os = "macos")]
-use libc::{c_void, sysctl, timeval};
-use models::HostInfo;
+use libc::c_void;
 use std::io::{Error, ErrorKind};
-use std::time::Duration;
 
 /// Get the machine UUID of the host.
 ///

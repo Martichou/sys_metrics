@@ -1,12 +1,7 @@
 use crate::models;
 
-#[cfg(target_family = "unix")]
 use libc::{c_double, getloadavg};
-#[cfg(target_os = "macos")]
-use libc::{c_uint, c_void, sysctl};
-#[cfg(target_family = "unix")]
 use models::LoadAvg;
-#[cfg(target_family = "unix")]
 use std::io::Error;
 
 /// Returns the [LoadAvg] over the last 1, 5 and 15 minutes.

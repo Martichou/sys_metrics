@@ -1,7 +1,4 @@
-use crate::disk_usage;
-use crate::is_physical_filesys;
 use crate::models;
-use crate::to_str;
 
 use core_foundation_sys::{
     base::{kCFAllocatorDefault, CFRelease},
@@ -15,12 +12,11 @@ use io_kit_sys::{
     types::{io_iterator_t, io_registry_entry_t},
     IOServiceMatching, *,
 };
-use libc::{c_char, statfs};
-use models::{Disks, IoStats};
+use libc::c_char;
+use models::IoStats;
 use std::ffi::CStr;
 use std::io::Error;
 use std::io::ErrorKind;
-use std::path::PathBuf;
 
 /// Get basic [IoStats] info for each disks/partitions.
 ///
