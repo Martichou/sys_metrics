@@ -90,15 +90,13 @@ pub fn get_users() -> Result<Vec<String>, Error> {
     let mut utmp_struct: utmp = Default::default();
     let buffer: *mut c_void = &mut utmp_struct as *mut _ as *mut c_void;
 
-    unsafe {
-        while read(utmp_file.as_raw_fd(), buffer, mem::size_of::<utmp>()) != 0 {
-            let cbuffer = &*(buffer as *mut utmp) as &utmp;
-            let cuser = &*(&cbuffer.ut_user as *const [i8]);
+    while unsafe { read(utmp_file.as_raw_fd(), buffer, mem::size_of::<utmp>()) } != 0 {
+        let cbuffer = unsafe { &*(buffer as *mut utmp) as &utmp };
+        let cuser = unsafe { &*(&cbuffer.ut_user as *const [i8]) };
 
-            if cuser[0] != 0 && cbuffer.ut_type == 7 {
-                let csuser = to_str(cuser.as_ptr()).trim_matches('\0').to_owned();
-                users.push(csuser);
-            }
+        if cuser[0] != 0 && cbuffer.ut_type == 7 {
+            let csuser = to_str(cuser.as_ptr()).trim_matches('\0').to_owned();
+            users.push(csuser);
         }
     }
 
