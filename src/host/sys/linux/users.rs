@@ -43,42 +43,6 @@ pub struct utmp {
     pub __glibc_reserved: [c_char; 20],
 }
 
-impl Default for exit_status {
-    fn default() -> exit_status {
-        exit_status {
-            e_termination: 0,
-            e_exit: 0,
-        }
-    }
-}
-
-impl Default for ut_tv {
-    fn default() -> ut_tv {
-        ut_tv {
-            tv_sec: 0,
-            tv_usec: 0,
-        }
-    }
-}
-
-impl Default for utmp {
-    fn default() -> utmp {
-        utmp {
-            ut_type: 0,
-            ut_pid: 0,
-            ut_line: [0; UT_LINESIZE],
-            ut_id: [0; 4],
-            ut_user: [0; UT_NAMESIZE],
-            ut_host: [0; UT_HOSTSIZE],
-            ut_exit: Default::default(),
-            ut_session: 0,
-            ut_tv: Default::default(),
-            ut_addr_v6: [0; 4],
-            __glibc_reserved: [0; 20],
-        }
-    }
-}
-
 /// Get the currently logged users.
 ///
 /// On linux it will get them from `/var/run/utmp`. It will use the C's UTMP Struct and the unsafe read C's function.
@@ -87,7 +51,7 @@ impl Default for utmp {
 pub fn get_users() -> Result<Vec<String>, Error> {
     let mut users: Vec<String> = Vec::new();
     let utmp_file = File::open("/var/run/utmp")?;
-    let mut utmp_struct: utmp = Default::default();
+    let mut utmp_struct: utmp = unsafe { std::mem::zeroed() };
     let buffer: *mut c_void = &mut utmp_struct as *mut _ as *mut c_void;
 
     while unsafe { read(utmp_file.as_raw_fd(), buffer, mem::size_of::<utmp>()) } != 0 {
