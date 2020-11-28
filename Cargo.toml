@@ -32,26 +32,26 @@ lto = true
 opt-level = 3
 codegen-units = 1
 
-# [[bench]]
-# name = "global_bench"
-# harness = false
+[[bench]]
+name = "global_bench"
+harness = false
 
-# [[bench]]
-# name = "cpu_bench"
-# harness = false
+[[bench]]
+name = "cpu_bench"
+harness = false
 
 [[bench]]
 name = "disks_bench"
 harness = false
 
-# [[bench]]
-# name = "memory_bench"
-# harness = false
+[[bench]]
+name = "memory_bench"
+harness = false
 
-# [[bench]]
-# name = "host_bench"
-# harness = false
+[[bench]]
+name = "host_bench"
+harness = false
 
-# [[bench]]
-# name = "network_bench"
-# harness = false
+[[bench]]
+name = "network_bench"
+harness = false
