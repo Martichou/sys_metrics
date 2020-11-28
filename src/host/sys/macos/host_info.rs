@@ -48,6 +48,7 @@ fn get_uptime() -> Result<Duration, Error> {
         return Err(Error::last_os_error());
     }
 
-    let data = unsafe { data.assume_init() };
-    Ok(Duration::from_secs(data.tv_sec as u64))
+    Ok(Duration::from_secs(
+        unsafe { data.assume_init() }.tv_sec as u64,
+    ))
 }
