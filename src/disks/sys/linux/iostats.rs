@@ -19,19 +19,24 @@ use std::{
 pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
     let mut viostats: Vec<IoStats> = Vec::new();
     let file = File::open("/proc/diskstats")?;
-    let file = BufReader::with_capacity(2048, file);
+    let mut file = BufReader::with_capacity(2048, file);
 
-    for line in file.lines() {
-        let line = line.unwrap();
-        let fields = line.split_whitespace().collect::<Vec<&str>>();
-        if fields.len() < 14 {
+    let mut line = String::with_capacity(512);
+    while file.read_line(&mut line)? != 0 {
+        let mut fields = line.split_whitespace();
+        let name = fields.nth(2).unwrap();
+        let byte_r = fields.nth(2).unwrap();
+        let byte_w = fields.nth(3).unwrap();
+        if fields.count() < 4 {
+            line.clear();
             continue;
         }
         viostats.push(IoStats {
-            device_name: fields[2].to_owned(),
-            bytes_read: fields[5].parse::<i64>().unwrap() * 512,
-            bytes_wrtn: fields[9].parse::<i64>().unwrap() * 512,
+            device_name: name.to_owned(),
+            bytes_read: byte_r.parse::<i64>().unwrap() * 512,
+            bytes_wrtn: byte_w.parse::<i64>().unwrap() * 512,
         });
+        line.clear();
     }
 
     Ok(viostats)

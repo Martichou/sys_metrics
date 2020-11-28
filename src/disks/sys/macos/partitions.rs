@@ -46,14 +46,14 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
         if !is_physical_filesys(to_str(stat.f_fstypename.as_ptr())) {
             continue;
         }
-        let m_p = PathBuf::from(to_str(stat.f_mntonname.as_ptr()).to_owned());
-        let usage: (u64, u64) = match disk_usage(&m_p) {
+        let path = to_str(stat.f_mntonname.as_ptr());
+        let usage: (u64, u64) = match disk_usage(&path.as_bytes()) {
             Ok(val) => val,
             Err(x) => return Err(x),
         };
         vdisks.push(Disks {
             name: to_str(stat.f_mntfromname.as_ptr()).to_owned(),
-            mount_point: m_p.into_os_string().into_string().unwrap(),
+            mount_point: path.to_owned(),
             total_space: usage.0 / 100000,
             avail_space: usage.1 / 100000,
         });
