@@ -6,7 +6,6 @@ use crate::to_str;
 use libc::statfs;
 use models::Disks;
 use std::io::Error;
-use std::path::PathBuf;
 
 extern "C" {
     fn getfsstat64(buf: *mut statfs, bufsize: libc::c_int, flags: libc::c_int) -> libc::c_int;
