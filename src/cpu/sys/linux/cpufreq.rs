@@ -24,21 +24,22 @@ use std::{
 /// ```
 pub fn get_cpufreq() -> Result<f64, Error> {
     let file = File::open("/proc/cpuinfo")?;
-    let file = BufReader::with_capacity(1024, file);
+    let mut file = BufReader::with_capacity(1024, file);
 
-    for line in file.lines() {
-        let line = line.unwrap();
+    let mut line = String::with_capacity(256);
+    while file.read_line(&mut line)? != 0 {
         let lenght = line.len();
         if lenght > 7 && lenght < 48 && &line[..7] == "cpu MHz" {
             match line[11..lenght - 1].parse::<f64>() {
                 Ok(val) => return Ok(val),
-                Err(_) => continue,
+                Err(_) => {
+                    line.clear();
+                    continue;
+                }
             };
         }
+        line.clear();
     }
 
-    Err(Error::new(
-        ErrorKind::Other,
-        "Couldn't get the avg_cpu_freq",
-    ))
+    Err(Error::new(ErrorKind::Other, "Couldn't get the cpufreq"))
 }

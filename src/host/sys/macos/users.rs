@@ -2,7 +2,6 @@ use crate::to_str;
 
 use libc::{getutxent, setutxent, utmpx};
 use std::io::Error;
-use std::mem;
 
 /// Get the currently logged users.
 ///
@@ -11,11 +10,9 @@ use std::mem;
 /// On macOS it will use unsafes call to multiple OSX specific functions [setutxent, getutxent] (the struct is UTMPX for the inner usage).
 pub fn get_users() -> Result<Vec<String>, Error> {
     let mut users: Vec<String> = Vec::new();
-    #[allow(unused_assignments)]
-    let mut buffer: *mut utmpx = unsafe { mem::zeroed() };
 
     unsafe { setutxent() };
-    buffer = unsafe { getutxent() };
+    let mut buffer = unsafe { getutxent() };
     while !buffer.is_null() {
         let cbuffer = unsafe { &*(buffer as *mut utmpx) as &utmpx };
         let cuser = unsafe { &*(&cbuffer.ut_user as *const [i8]) };
