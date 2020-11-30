@@ -1,5 +1,4 @@
-use crate::disk_usage;
-use crate::is_physical_filesys;
+use crate::disks::{disk_usage, is_physical_filesys};
 use crate::models;
 use crate::to_str;
 

@@ -55,20 +55,11 @@ mod models;
 
 pub use models::*;
 
-use libc::{c_char, statvfs, PATH_MAX};
-#[cfg(target_os = "macos")]
-use mach::vm_types::integer_t;
+use libc::c_char;
 use std::ffi::CStr;
 #[cfg(target_os = "linux")]
 use std::fs;
-use std::io::{Error, ErrorKind};
-
-#[allow(non_camel_case_types)]
-#[cfg(target_os = "macos")]
-type host_flavor_t = integer_t;
-#[allow(non_camel_case_types)]
-#[cfg(target_os = "macos")]
-type host_info64_t = *mut integer_t;
+use std::io::Error;
 
 // Static reference to the page_size for memory
 #[cfg(target_os = "macos")]
@@ -85,74 +76,6 @@ lazy_static::lazy_static! {
 pub(crate) fn read_and_trim(path: &str) -> Result<String, Error> {
     let content = fs::read_to_string(path)?;
     Ok(content.trim().to_owned())
-}
-
-/// Detect if a filesysteme is for a physical drive or not.
-/// This is not 100% true, but it's true enough for me.
-pub(crate) fn is_physical_filesys(filesysteme: &str) -> bool {
-    match filesysteme {
-        "ext2" => true,
-        "ext3" => true,
-        "ext4" => true,
-        "vfat" => true,
-        "ntfs" => true,
-        "zfs" => true,
-        "hfs" => true,
-        "reiserfs" => true,
-        "reiser4" => true,
-        "exfat" => true,
-        "f2fs" => true,
-        "hfsplus" => true,
-        "jfs" => true,
-        "btrfs" => true,
-        "minix" => true,
-        "nilfs" => true,
-        "xfs" => true,
-        "apfs" => true,
-        "fuseblk" => true,
-        _ => false,
-    }
-}
-
-/// Return the total/free space of a Disk from it's path (mount_point).
-pub(crate) fn disk_usage<P>(path: P) -> Result<(u64, u64), Error>
-where
-    P: AsRef<[u8]>,
-{
-    let mut statvfs = std::mem::MaybeUninit::<statvfs>::uninit();
-
-    let mpath = path.as_ref();
-    let mpath_len = mpath.len();
-    if mpath_len >= PATH_MAX as usize {
-        return Err(Error::new(ErrorKind::Other, "Invalid path lenght"));
-    }
-    let mut buf = [0u8; PATH_MAX as usize];
-
-    unsafe {
-        std::ptr::copy_nonoverlapping(mpath.as_ptr(), buf.as_mut_ptr(), mpath_len);
-        if libc::statvfs(
-            CStr::from_ptr(buf.as_ptr() as *const c_char).as_ptr(),
-            statvfs.as_mut_ptr(),
-        ) == -1
-        {
-            return Err(Error::last_os_error());
-        }
-    }
-
-    let statvfs = unsafe { statvfs.assume_init() };
-    let total = statvfs.f_blocks as u64 * statvfs.f_bsize as u64;
-    let free = statvfs.f_bavail as u64 * statvfs.f_bsize as u64;
-
-    Ok((total, free))
-}
-
-#[allow(dead_code)]
-#[inline]
-pub(crate) fn to_str_mut<'a>(s: *mut c_char) -> &'a str {
-    unsafe {
-        let res = CStr::from_ptr(s).to_bytes();
-        std::str::from_utf8_unchecked(res)
-    }
 }
 
 #[inline]
