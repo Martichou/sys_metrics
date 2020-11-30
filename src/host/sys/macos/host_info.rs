@@ -32,13 +32,13 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
 
 fn get_uptime() -> Result<Duration, Error> {
     let mut data = std::mem::MaybeUninit::<timeval>::uninit();
-    let mib = [1, 21];
+    let mut mib: [i32; 2] = [1, 21];
 
     if unsafe {
         sysctl(
-            &mib[0] as *const _ as *mut _,
+            mib.as_mut_ptr(),
             mib.len() as u32,
-            &mut data as *mut _ as *mut c_void,
+            data.as_mut_ptr() as *mut c_void,
             &mut std::mem::size_of::<timeval>(),
             std::ptr::null_mut(),
             0,

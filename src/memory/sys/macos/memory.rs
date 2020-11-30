@@ -1,4 +1,4 @@
-use crate::{host_flavor_t, host_info64_t, PAGE_SIZE};
+use crate::PAGE_SIZE;
 
 use crate::models;
 
@@ -6,6 +6,7 @@ use mach::{
     kern_return::kern_return_t,
     mach_types::{host_name_port_t, host_t},
     message::mach_msg_type_number_t,
+    vm_types::integer_t,
 };
 use models::vm_statistics64;
 use models::Memory;
@@ -16,8 +17,8 @@ extern "C" {
 
     fn host_statistics64(
         host_priv: host_t,
-        flavor: host_flavor_t,
-        host_info_out: host_info64_t,
+        flavor: integer_t,
+        host_info_out: *mut integer_t,
         host_info_outCnt: *const mach_msg_type_number_t,
     ) -> kern_return_t;
 }
@@ -37,8 +38,7 @@ pub fn get_memory() -> Result<Memory, Error> {
     let port = unsafe { mach_host_self() };
     let mut vm_stats = std::mem::MaybeUninit::<vm_statistics64>::uninit();
     // GET HOST INFO ABOUT MEMORY & CHECK THE RETURN VALUE OF host_statistics64
-    if unsafe { host_statistics64(port, 4, &mut vm_stats as *mut _ as host_info64_t, &count) } != 0
-    {
+    if unsafe { host_statistics64(port, 4, vm_stats.as_mut_ptr() as *mut integer_t, &count) } != 0 {
         return Err(Error::last_os_error());
     }
     // Is the port_deallocate really usefull ?

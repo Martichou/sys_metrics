@@ -12,7 +12,7 @@ use io_kit_sys::{
     types::{io_iterator_t, io_registry_entry_t},
     IOServiceMatching, *,
 };
-use libc::c_char;
+use libc::{c_char, c_void};
 use models::IoStats;
 use std::ffi::CStr;
 use std::io::Error;
@@ -35,7 +35,7 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
         if IOServiceGetMatchingServices(
             kIOMasterPortDefault,
             IOServiceMatching(b"IOMedia\0".as_ptr() as *const c_char),
-            &mut disk_list as *mut _ as *mut _,
+            disk_list.as_mut_ptr(),
         ) != kIOReturnSuccess
         {
             return Err(Error::last_os_error());
@@ -85,8 +85,8 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
                     0,
                 ) != kIOReturnSuccess
                 {
-                    CFRelease(parent_dict as *mut _);
-                    CFRelease(props_dict as *mut _);
+                    CFRelease(parent_dict as *mut c_void);
+                    CFRelease(props_dict as *mut c_void);
                     IOObjectRelease(disk);
                     IOObjectRelease(parent);
                     return Err(Error::last_os_error());
@@ -95,12 +95,12 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
                 let mut disk_name_ref = std::mem::MaybeUninit::<CFStringRef>::uninit();
                 if CFDictionaryGetValueIfPresent(
                     parent_dict,
-                    CFSTR(b"BSD Name\0".as_ptr() as *mut i8) as *mut _,
-                    &mut disk_name_ref as *mut _ as *mut _,
+                    CFSTR(b"BSD Name\0".as_ptr() as *mut i8) as *mut c_void,
+                    disk_name_ref.as_mut_ptr() as *mut *const c_void,
                 ) == 0
                 {
-                    CFRelease(parent_dict as *mut _);
-                    CFRelease(props_dict as *mut _);
+                    CFRelease(parent_dict as *mut c_void);
+                    CFRelease(props_dict as *mut c_void);
                     IOObjectRelease(disk);
                     IOObjectRelease(parent);
                     return Err(Error::new(
@@ -111,8 +111,8 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
                 let disk_name_ref = disk_name_ref.assume_init();
                 let mut name = [0i8; 64];
                 if CFStringGetCString(disk_name_ref, name.as_mut_ptr(), 64, 134217984) == 0 {
-                    CFRelease(parent_dict as *mut _);
-                    CFRelease(props_dict as *mut _);
+                    CFRelease(parent_dict as *mut c_void);
+                    CFRelease(props_dict as *mut c_void);
                     IOObjectRelease(disk);
                     IOObjectRelease(parent);
                     return Err(Error::new(ErrorKind::Other, "Cannot get the buffer filled"));
@@ -120,12 +120,12 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
 
                 if CFDictionaryGetValueIfPresent(
                     props_dict,
-                    CFSTR(b"Statistics\0".as_ptr() as *mut i8) as *mut _,
-                    &mut stats_dict as *mut _ as *mut _,
+                    CFSTR(b"Statistics\0".as_ptr() as *mut i8) as *mut c_void,
+                    &mut stats_dict as *mut _ as *mut *const c_void,
                 ) == 0
                 {
-                    CFRelease(parent_dict as *mut _);
-                    CFRelease(props_dict as *mut _);
+                    CFRelease(parent_dict as *mut c_void);
+                    CFRelease(props_dict as *mut c_void);
                     IOObjectRelease(disk);
                     IOObjectRelease(parent);
                     return Err(Error::new(
@@ -141,12 +141,12 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
 
                 if CFDictionaryGetValueIfPresent(
                     stats_dict,
-                    CFSTR(b"Bytes (Read)\0".as_ptr() as *mut i8) as *mut _,
-                    &mut write_bytes_nbr as *mut _ as *mut _,
+                    CFSTR(b"Bytes (Read)\0".as_ptr() as *mut i8) as *mut c_void,
+                    write_bytes_nbr.as_mut_ptr() as *mut *const c_void,
                 ) == 0
                 {
-                    CFRelease(parent_dict as *mut _);
-                    CFRelease(props_dict as *mut _);
+                    CFRelease(parent_dict as *mut c_void);
+                    CFRelease(props_dict as *mut c_void);
                     IOObjectRelease(disk);
                     IOObjectRelease(parent);
                     return Err(Error::new(
@@ -155,16 +155,16 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
                     ));
                 }
                 let number = write_bytes_nbr.assume_init();
-                CFNumberGetValue(number, 4, &mut read_bytes as *mut _ as *mut _);
+                CFNumberGetValue(number, 4, &mut read_bytes as *mut _ as *mut c_void);
 
                 if CFDictionaryGetValueIfPresent(
                     stats_dict,
-                    CFSTR(b"Bytes (Write)\0".as_ptr() as *mut i8) as *mut _,
-                    &mut read_bytes_nbr as *mut _ as *mut _,
+                    CFSTR(b"Bytes (Write)\0".as_ptr() as *mut i8) as *mut c_void,
+                    read_bytes_nbr.as_mut_ptr() as *mut *const c_void,
                 ) == 0
                 {
-                    CFRelease(parent_dict as *mut _);
-                    CFRelease(props_dict as *mut _);
+                    CFRelease(parent_dict as *mut c_void);
+                    CFRelease(props_dict as *mut c_void);
                     IOObjectRelease(disk);
                     IOObjectRelease(parent);
                     return Err(Error::new(
@@ -173,7 +173,7 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
                     ));
                 }
                 let number = read_bytes_nbr.assume_init();
-                CFNumberGetValue(number, 4, &mut write_bytes as *mut _ as *mut _);
+                CFNumberGetValue(number, 4, &mut write_bytes as *mut _ as *mut c_void);
 
                 let name = match CStr::from_ptr(name.as_mut_ptr()).to_str() {
                     Ok(val) => val.to_owned(),
@@ -186,8 +186,8 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
                     bytes_wrtn: write_bytes,
                 });
 
-                CFRelease(parent_dict as *mut _);
-                CFRelease(props_dict as *mut _);
+                CFRelease(parent_dict as *mut c_void);
+                CFRelease(props_dict as *mut c_void);
                 IOObjectRelease(disk);
                 IOObjectRelease(parent);
             }

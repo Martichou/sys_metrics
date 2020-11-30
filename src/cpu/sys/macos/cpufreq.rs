@@ -21,11 +21,11 @@ use std::io::Error;
 /// ```
 pub fn get_cpufreq() -> Result<f64, Error> {
     let mut data: c_uint = 0;
-    let mib = [6, 15];
+    let mut mib = [6, 15];
 
     if unsafe {
         sysctl(
-            &mib[0] as *const _ as *mut _,
+            mib.as_mut_ptr(),
             mib.len() as u32,
             &mut data as *mut _ as *mut c_void,
             &mut std::mem::size_of::<c_uint>(),

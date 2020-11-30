@@ -8,11 +8,11 @@ use std::io::Error;
 /// And on macOS it will make a syscall to sysctl with hw.logicalcpu.
 pub fn get_cpu_logical_count() -> Result<i64, Error> {
     let mut data: c_uint = 0;
-    let mib = [6, 25];
+    let mut mib: [i32; 2] = [6, 25];
 
     if unsafe {
         sysctl(
-            &mib[0] as *const _ as *mut _,
+            mib.as_mut_ptr(),
             mib.len() as u32,
             &mut data as *mut _ as *mut c_void,
             &mut std::mem::size_of::<c_uint>(),
@@ -21,10 +21,10 @@ pub fn get_cpu_logical_count() -> Result<i64, Error> {
         )
     } < 0
     {
-        let mib = [6, 3];
+        let mut mib: [i32; 2] = [6, 3];
         if unsafe {
             sysctl(
-                &mib[0] as *const _ as *mut _,
+                mib.as_mut_ptr(),
                 mib.len() as u32,
                 &mut data as *mut _ as *mut c_void,
                 &mut std::mem::size_of::<c_uint>(),
