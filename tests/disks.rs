@@ -29,4 +29,17 @@ mod tests {
             let _ = s.bytes_wrtn;
         }
     }
+
+    #[test]
+    fn test_iostats_physical() {
+        let stats = get_iostats_physical().unwrap();
+
+        assert!(stats.len() > 0);
+
+        for s in stats {
+            let _ = s.device_name;
+            let _ = s.bytes_read;
+            let _ = s.bytes_wrtn;
+        }
+    }
 }
