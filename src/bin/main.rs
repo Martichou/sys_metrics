@@ -7,6 +7,7 @@ fn main() {
     dbg!(get_cpufreq());
     dbg!(get_partitions_physical());
     dbg!(get_iostats());
+    dbg!(get_iostats_physical());
     dbg!(get_users());
     dbg!(get_cpu_logical_count());
 }

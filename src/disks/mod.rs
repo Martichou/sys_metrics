@@ -26,6 +26,8 @@ where
 
 /// Detect if a filesysteme is for a physical drive or not.
 /// This is not 100% true, but it's true enough for me.
+/// The better approach would be to read the filesystems from /proc/filesystems
+/// maybe construct a lazy_static array of filesystems.
 pub(crate) fn is_physical_filesys(filesysteme: &str) -> bool {
     match filesysteme {
         "ext2" => true,

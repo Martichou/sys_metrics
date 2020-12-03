@@ -7,6 +7,7 @@ pub fn disks_benches(c: &mut Criterion) {
         b.iter(|| get_partitions_physical())
     });
     c.bench_function("get_iostats", |b| b.iter(|| get_iostats()));
+    c.bench_function("get_iostats_physical", |b| b.iter(|| get_iostats_physical()));
 }
 
 criterion_group!(benches, disks_benches);
