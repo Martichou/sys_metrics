@@ -33,14 +33,15 @@ jobs:
     name: ${{ matrix.name }}
     needs: [style]
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
-    # The build matrix does not yet support 'allow failures' at job level.
-    # See `jobs.nightly` for the active nightly job definition.
     strategy:
       matrix:
         name:
           - linux / stable
-          - linux / beta
           - macOS / stable
+        include:
+          - name: linux / stable
+          - name: macOS / stable
+            os: macOS-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -48,7 +49,6 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ matrix.rust || 'stable' }}
-          target: ${{ matrix.target }}
           profile: minimal
           override: true
       - name: Build
@@ -61,8 +61,6 @@ jobs:
         with:
           command: test
 
-  # Separate build job for nightly because of the missing feature for allowed failures at
-  # job level. See `jobs.build.strategy.matrix`.
   nightly:
     name: linux / nightly
     needs: [style]
