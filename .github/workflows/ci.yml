@@ -82,11 +82,20 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-
+          
   bench:
-    name: bench / linux
+    name: bench / ${{ matrix.name }}
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+    strategy:
+      matrix:
+        name:
+          - linux / stable
+          - macOS / stable
+        include:
+          - name: linux / stable
+          - name: macOS / stable
+            os: macOS-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
