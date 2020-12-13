@@ -15,7 +15,7 @@ categories = ["os", "api-bindings"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-libc = "0.2.80"
+libc = "0.2.81"
 serde = { version = "1.0", features = ["derive"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
@@ -32,9 +32,8 @@ lto = true
 opt-level = 3
 codegen-units = 1
 
-[[bench]]
-name = "global_bench"
-harness = false
+[lib]
+bench = false
 
 [[bench]]
 name = "cpu_bench"

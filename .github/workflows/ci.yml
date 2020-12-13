@@ -82,7 +82,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          
+
   bench:
     name: bench / ${{ matrix.name }}
     needs: [build]
@@ -107,3 +107,6 @@ jobs:
           override: true
       - name: Run benchmark
         run: cargo bench
+      # Upload result on https://perf-ci.speculare.cloud
+      # Will post using GITHUB_TOKEN or another secret.
+      # Using the GITHUB_REF and GITHUB_SHA to identify the runs.
