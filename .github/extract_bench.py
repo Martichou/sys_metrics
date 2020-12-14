@@ -7,13 +7,9 @@ import requests
 
 from glob import glob
 
-if len(sys.argv) < 4:
-	print("Missing args (commit_hash, git_branch, token)")
-	exit(0)
-
-commit_hash = sys.argv[1]
-git_branch = sys.argv[2]
-token = sys.argv[3]
+commit_hash = os.environ.get('GITHUB_SHA')
+git_branch = os.environ.get('GITHUB_REF').split('/')[2]
+token = os.environ.get('API_KEY')
 
 directory = "target/criterion"
 globed = glob("target/criterion/*/new")
@@ -38,5 +34,5 @@ for res_dir in globed:
 		data["datas"].append(temp)
 data_json = json.dumps(data)
 
-url = "https://perf-ci.speculare.cloud"
+url = "https://perf-ci.speculare.cloud/api/ingest"
 req = requests.post(url, data=data_json, headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'})
