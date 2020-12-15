@@ -36,5 +36,5 @@ for res_dir in globed:
 		data["datas"].append(temp)
 data_json = json.dumps(data)
 
-url = "http://0.0.0.0:8080/api/ingest"
+url = "https://perf-ci.speculare.cloud/api/ingest"
 req = requests.post(url, data=data_json, headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'})
