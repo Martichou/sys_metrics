@@ -10,12 +10,14 @@ from glob import glob
 commit_hash = os.environ.get('GITHUB_SHA')
 git_branch = os.environ.get('GITHUB_REF').split('/')[2]
 token = os.environ.get('API_KEY')
+os = os.environ.get('OS_SPEC')
 
 directory = "target/criterion"
 globed = glob("target/criterion/*/new")
 data = {
 	"branch": git_branch,
 	"commit_hash": commit_hash,
+	"os": os,
 	"datas": [],
 }
 
@@ -34,5 +36,5 @@ for res_dir in globed:
 		data["datas"].append(temp)
 data_json = json.dumps(data)
 
-url = "https://perf-ci.speculare.cloud/api/ingest"
+url = "http://0.0.0.0:8080/api/ingest"
 req = requests.post(url, data=data_json, headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'})
