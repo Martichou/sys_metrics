@@ -3,7 +3,7 @@ use mach::vm_types::natural_t;
 use serde::Serialize;
 
 /// Struct containing a disk' information.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Disks {
     pub name: String,
     pub mount_point: String,
@@ -12,7 +12,7 @@ pub struct Disks {
 }
 
 /// Struct containing a disk_io (bytes read/wrtn) information.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct IoStats {
     pub device_name: String,
     pub bytes_read: i64,
@@ -20,7 +20,7 @@ pub struct IoStats {
 }
 
 /// Struct containing a cpu's loadavg information.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct LoadAvg {
     pub one: f64,
     pub five: f64,
@@ -28,7 +28,7 @@ pub struct LoadAvg {
 }
 
 /// Struct containing the memory (ram/swap) information.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Memory {
     pub total_virt: u64,
     pub avail_virt: u64,
@@ -37,7 +37,7 @@ pub struct Memory {
 }
 
 /// Struct containing the principal host's information.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct HostInfo {
     pub loadavg: LoadAvg,
     pub memory: Memory,
