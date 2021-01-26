@@ -107,17 +107,17 @@ jobs:
           override: true
       - name: Run benchmark
         run: cargo bench
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8.6'
-          architecture: 'x64'
-      - name: Install python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
-      - name: Push perf result
-        env:
-          API_KEY: ${{ secrets.API_KEY }}
-          OS_SPEC: ${{ matrix.os || 'ubuntu-latest' }}
-        run: python .github/extract_bench.py
+      # - name: Setup python
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: '3.8.6'
+      #     architecture: 'x64'
+      # - name: Install python dependencies
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     pip install requests
+      # - name: Push perf result
+      #   env:
+      #     API_KEY: ${{ secrets.API_KEY }}
+      #     OS_SPEC: ${{ matrix.os || 'ubuntu-latest' }}
+      #   run: python .github/extract_bench.py

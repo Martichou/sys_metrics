@@ -29,26 +29,26 @@ where
 /// The better approach would be to read the filesystems from /proc/filesystems
 /// maybe construct a lazy_static array of filesystems.
 pub(crate) fn is_physical_filesys(filesysteme: &str) -> bool {
-    match filesysteme {
-        "ext2" => true,
-        "ext3" => true,
-        "ext4" => true,
-        "vfat" => true,
-        "ntfs" => true,
-        "zfs" => true,
-        "hfs" => true,
-        "reiserfs" => true,
-        "reiser4" => true,
-        "exfat" => true,
-        "f2fs" => true,
-        "hfsplus" => true,
-        "jfs" => true,
-        "btrfs" => true,
-        "minix" => true,
-        "nilfs" => true,
-        "xfs" => true,
-        "apfs" => true,
-        "fuseblk" => true,
-        _ => false,
-    }
+    matches!(
+        filesysteme,
+        "ext2"
+            | "ext3"
+            | "ext4"
+            | "vfat"
+            | "ntfs"
+            | "zfs"
+            | "hfs"
+            | "reiserfs"
+            | "reiser4"
+            | "exfat"
+            | "f2fs"
+            | "hfsplus"
+            | "jfs"
+            | "btrfs"
+            | "minix"
+            | "nilfs"
+            | "xfs"
+            | "apfs"
+            | "fuseblk"
+    )
 }

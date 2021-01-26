@@ -21,9 +21,7 @@ Benchmarks
 ➜ cargo bench
 ```
 
-For reference you can check https://perf-ci.speculare.cloud/ for comparaison across commits.
-
-_Note: starting at commit [c0a7005](https://github.com/Martichou/sys_metrics/commit/c0a700596c4366b65855083bdd2f8719e95ee0a1)_
+For reference you can check https://perf-ci.speculare.cloud/ for comparaison across commits (disabled for now).
 
 Contributing
 --------------------------

@@ -25,9 +25,9 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
     let mut line = String::with_capacity(512);
     while file.read_line(&mut line)? != 0 {
         let mut fields = line.split_whitespace();
-        let name = fields.nth(0).unwrap();
-        let path = fields.nth(0).unwrap();
-        let filesys = fields.nth(0).unwrap();
+        let name = fields.next().unwrap();
+        let path = fields.next().unwrap();
+        let filesys = fields.next().unwrap();
         if !is_physical_filesys(filesys) {
             line.clear();
             continue;

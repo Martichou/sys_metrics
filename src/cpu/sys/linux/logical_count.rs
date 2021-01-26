@@ -9,21 +9,20 @@ pub fn get_cpu_logical_count() -> Result<i64, Error> {
     let cpus = unsafe { libc::sysconf(libc::_SC_NPROCESSORS_ONLN) };
     if cpus >= 0 {
         return Ok(cpus);
-    } else {
-        let mut set = std::mem::MaybeUninit::<libc::cpu_set_t>::uninit();
-        if unsafe {
-            libc::sched_getaffinity(0, std::mem::size_of::<libc::cpu_set_t>(), set.as_mut_ptr())
-        } == 0
-        {
-            let mut count: u32 = 0;
-            for i in 0..libc::CPU_SETSIZE as usize {
-                if unsafe { libc::CPU_ISSET(i, &set.assume_init()) } {
-                    count += 1
-                }
+    }
+    let mut set = std::mem::MaybeUninit::<libc::cpu_set_t>::uninit();
+    if unsafe {
+        libc::sched_getaffinity(0, std::mem::size_of::<libc::cpu_set_t>(), set.as_mut_ptr())
+    } == 0
+    {
+        let mut count: u32 = 0;
+        for i in 0..libc::CPU_SETSIZE as usize {
+            if unsafe { libc::CPU_ISSET(i, &set.assume_init()) } {
+                count += 1
             }
-            Ok(count.into())
-        } else {
-            Err(Error::last_os_error())
         }
+        Ok(count.into())
+    } else {
+        Err(Error::last_os_error())
     }
 }
