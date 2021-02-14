@@ -67,7 +67,7 @@ pub fn get_iostats_physical() -> Result<Vec<IoStats>, Error> {
         // Based on the sysstat code:
         // https://github.com/sysstat/sysstat/blob/1c711c1fd03ac638cfc1b25cdf700625c173fd2c/common.c#L200
         // Some devices may have a slash in their name (eg. cciss/c0d0...) so replace them with `!`
-        let path = std::ffi::CString::new(format!("/sys/block/{}", name.replace("/", "!")))?;
+        let path = std::ffi::CString::new(format!("/sys/block/{}/device", name.replace("/", "!")))?;
         if unsafe { libc::access(path.as_ptr(), libc::F_OK) } == 0 {
             line.clear();
             continue;
