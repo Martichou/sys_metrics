@@ -23,10 +23,12 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
 
     let mut line = String::with_capacity(512);
     while file.read_line(&mut line)? != 0 {
+        // See (https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats)
         let mut fields = line.split_whitespace();
         let name = fields.nth(2).unwrap();
         let byte_r = fields.nth(2).unwrap();
         let byte_w = fields.nth(3).unwrap();
+        // If we have less than 14 fields, we're missing some data
         if fields.count() < 4 {
             line.clear();
             continue;
