@@ -29,7 +29,7 @@ pub struct LoadAvg {
 
 /// Struct containing cpu stat information.
 #[derive(Debug, Clone, Default, Serialize)]
-pub struct CpuStat {
+pub struct CpuStats {
     pub user: i64,
     pub nice: i64,
     pub system: i64,
@@ -42,7 +42,7 @@ pub struct CpuStat {
     pub guest_nice: i64,
 }
 
-impl CpuStat {
+impl CpuStats {
     /// Return the amount of time the system CPU as been busy
     pub fn busy_time(&self) -> i64 {
         self.user + self.nice + self.system + self.irq + self.softirq + self.steal

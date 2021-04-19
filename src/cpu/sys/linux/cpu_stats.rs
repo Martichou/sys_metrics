@@ -1,6 +1,6 @@
 use crate::models;
 
-use models::CpuStat;
+use models::CpuStats;
 use std::io::Error;
 use std::{
     fs::File,
@@ -31,7 +31,7 @@ use std::{
 /// On macOS it will [TODO].
 ///
 /// [CpuStat]: ../struct.CpuStat.html
-pub fn get_cpustat() -> Result<CpuStat, Error> {
+pub fn get_cpustats() -> Result<CpuStats, Error> {
     let file = File::open("/proc/stat")?;
     let mut file = BufReader::with_capacity(1024, file);
 
@@ -54,7 +54,7 @@ pub fn get_cpustat() -> Result<CpuStat, Error> {
         let guest = fields.next().unwrap_or("0");
         let guest_nice = fields.next().unwrap_or("0");
         // Return the struct, and parse to i64
-        return Ok(CpuStat {
+        return Ok(CpuStats {
             user: user.parse::<i64>().unwrap(),
             nice: nice.parse::<i64>().unwrap(),
             system: system.parse::<i64>().unwrap(),
