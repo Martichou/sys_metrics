@@ -2,6 +2,7 @@ use crate::cpu;
 use crate::host;
 use crate::memory;
 use crate::models;
+use crate::to_str;
 
 use libc::{c_void, sysctl, timeval};
 use models::HostInfo;
