@@ -7,7 +7,6 @@ use crate::to_str;
 use models::HostInfo;
 use std::io::{Error, ErrorKind};
 use std::time::Duration;
-use std::mem;
 
 /// Get some basic [HostInfo] of the host.
 ///

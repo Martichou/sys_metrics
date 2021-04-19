@@ -25,7 +25,7 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
         loadavg: cpu::get_loadavg().unwrap(),
         memory: memory::get_memory()?,
         uptime: get_uptime().unwrap().as_secs(),
-        system: to_str(x.sysname.as_ptr()).to_owned()
+        system: to_str(x.sysname.as_ptr()).to_owned(),
         os_version: host::get_os_version_from_uname(&x),
         hostname: host::get_hostname_from_uname(&x),
     })
