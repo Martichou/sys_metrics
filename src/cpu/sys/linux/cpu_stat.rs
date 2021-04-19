@@ -40,6 +40,7 @@ pub fn get_cpustat() -> Result<CpuStat, Error> {
         // Split whitespaces and get an Array of values
         let mut fields = line.split_whitespace();
 
+        // TODO - Add guard if less than 7 fields
         // Skip the first columns which is the name of the stats
         let user = fields.nth(1).unwrap();
         let nice = fields.next().unwrap();

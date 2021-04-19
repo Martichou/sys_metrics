@@ -42,6 +42,23 @@ pub struct CpuStat {
     pub guest_nice: i64,
 }
 
+impl CpuStat {
+    /// Return the amount of time the system CPU as been busy
+    pub fn busy_time(&self) -> i64 {
+        self.user + self.nice + self.system + self.irq + self.softirq + self.steal
+    }
+
+    /// Return the amount of time the system CPU as been idling
+    pub fn idle_time(&self) -> i64 {
+        self.idle + self.iowait
+    }
+
+    /// Return the total amount of time of the CPU since boot
+    pub fn total_time(&self) -> i64 {
+        self.busy_time() + self.idle_time()
+    }
+}
+
 /// Struct containing the memory (ram/swap) information.
 #[derive(Debug, Clone, Serialize)]
 pub struct Memory {
