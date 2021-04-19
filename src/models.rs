@@ -73,6 +73,7 @@ pub struct Memory {
 pub struct HostInfo {
     pub loadavg: LoadAvg,
     pub memory: Memory,
+    pub system: String,
     pub os_version: String,
     pub hostname: String,
     pub uptime: u64,

@@ -2,10 +2,12 @@ use crate::cpu;
 use crate::host;
 use crate::memory;
 use crate::models;
+use crate::to_str;
 
 use models::HostInfo;
 use std::io::{Error, ErrorKind};
 use std::time::Duration;
+use std::mem;
 
 /// Get some basic [HostInfo] of the host.
 ///
@@ -28,6 +30,7 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
         loadavg: cpu::get_loadavg_from_sysinfo(&y),
         memory: memory::get_memory_from_sysinfo(&y),
         uptime: get_uptime_from_sysinfo(&y).as_secs(),
+        system: to_str(x.sysname.as_ptr()).to_owned(),
         os_version: host::get_os_version_from_uname(&x),
         hostname: host::get_hostname_from_uname(&x),
     })
