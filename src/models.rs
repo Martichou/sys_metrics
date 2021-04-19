@@ -27,6 +27,21 @@ pub struct LoadAvg {
     pub fifteen: f64,
 }
 
+/// Struct containing cpu stat information.
+#[derive(Debug, Clone, Default, Serialize)]
+pub struct CpuStat {
+    pub user: i64,
+    pub nice: i64,
+    pub system: i64,
+    pub idle: i64,
+    pub iowait: i64,
+    pub irq: i64,
+    pub softirq: i64,
+    pub steal: i64,
+    pub guest: i64,
+    pub guest_nice: i64,
+}
+
 /// Struct containing the memory (ram/swap) information.
 #[derive(Debug, Clone, Serialize)]
 pub struct Memory {
