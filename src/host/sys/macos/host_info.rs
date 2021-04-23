@@ -1,5 +1,4 @@
 use crate::cpu;
-use crate::host;
 use crate::host::{self, HostInfo};
 use crate::memory;
 use crate::to_str;
@@ -23,7 +22,6 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
 
     Ok(HostInfo {
         loadavg: cpu::get_loadavg().unwrap(),
-        memory: memory::get_memory()?,
         uptime: get_uptime().unwrap().as_secs(),
         system: to_str(x.sysname.as_ptr()).to_owned(),
         os_version: host::get_os_version_from_uname(&x),

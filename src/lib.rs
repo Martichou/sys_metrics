@@ -42,7 +42,6 @@ use std::fs;
 #[cfg(target_os = "linux")]
 use std::io::Error;
 
-/// Static reference to the page_size for memory
 #[cfg(target_os = "macos")]
 lazy_static::lazy_static! {
     static ref PAGE_SIZE: u64 = {

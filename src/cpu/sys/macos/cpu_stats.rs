@@ -1,7 +1,6 @@
 use crate::cpu::CpuStats;
 
-use std::io::Error;
-use std::{fs::File, io::ErrorKind};
+use std::io::{Error, ErrorKind};
 
 /// Get basic [CpuStats] info the host.
 ///
