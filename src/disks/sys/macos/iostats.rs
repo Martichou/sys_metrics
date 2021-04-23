@@ -276,7 +276,9 @@ unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
 ///
 /// [IoStats]: ../struct.IoStats.html
 pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
-    _get_iostats(false)
+    unsafe {
+        _get_iostats(false)
+    }
 }
 
 /// Get basic [IoStats] (physical) info for each physical disks.
@@ -287,5 +289,7 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
 ///
 /// [IoStats]: ../disks/struct.IoStats.html
 pub fn get_iostats_physical() -> Result<Vec<IoStats>, Error> {
-    _get_iostats(true)
+    unsafe {
+        _get_iostats(true)
+    }
 }
