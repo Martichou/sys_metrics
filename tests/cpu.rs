@@ -11,6 +11,13 @@ mod tests {
     }
 
     #[test]
+    fn test_cpustats() {
+        let cpustats = get_cpustats().unwrap();
+
+        assert!(cpustats.user >= 0);
+    }
+
+    #[test]
     fn test_loadavg() {
         let loadavg = get_loadavg().unwrap();
 
