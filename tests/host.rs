@@ -60,6 +60,6 @@ mod tests {
     #[test]
     fn test_users() {
         // TODO
-        let _ = get_users();
+        let _users = get_users();
     }
 }
