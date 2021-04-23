@@ -8,16 +8,7 @@ extern "C" {
     fn getfsstat64(buf: *mut statfs, bufsize: libc::c_int, flags: libc::c_int) -> libc::c_int;
 }
 
-/// Return a Vec of [Disks] with their minimal informations.
-///
-/// Contains `name`, `mount_point` and `total`/`free` space.
-///
-/// On linux it will get them from `/proc/mounts`.
-///
-/// On macOS it will use an unsafe call to `getfsstat64`.
-///
-/// [Disks]: ../disks/struct.Disks.html
-pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
+fn _get_partitions(physical: bool) -> Result<Vec<Disks>, Error> {
     let expected_len = unsafe { getfsstat64(std::ptr::null_mut(), 0, 2) };
     let mut mounts: Vec<statfs> = Vec::with_capacity(expected_len as usize);
 
@@ -39,7 +30,7 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
 
     let mut vdisks: Vec<Disks> = Vec::with_capacity(expected_len as usize);
     for stat in mounts {
-        if !is_physical_filesys(to_str(stat.f_fstypename.as_ptr())) {
+        if physical && !is_physical_filesys(to_str(stat.f_fstypename.as_ptr())) {
             continue;
         }
         let path = to_str(stat.f_mntonname.as_ptr());
@@ -47,6 +38,7 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
             Ok(val) => val,
             Err(x) => return Err(x),
         };
+        // TODO - Check if the / 100000 is correct
         vdisks.push(Disks {
             name: to_str(stat.f_mntfromname.as_ptr()).to_owned(),
             mount_point: path.to_owned(),
@@ -56,4 +48,26 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
     }
 
     Ok(vdisks)
+}
+
+/// Return a Vec of [Disks] (physical and virtual) with their minimal informations.
+///
+/// Contains `name`, `mount_point` and `total`/`free` space.
+///
+/// On macOS it will use an unsafe call to `getfsstat64`.
+///
+/// [Disks]: ../disks/struct.Disks.html
+pub fn get_partitions() -> Result<Vec<Disks>, Error> {
+    _get_partitions(false)
+}
+
+/// Return a Vec of [Disks] (physical) with their minimal informations.
+///
+/// Contains `name`, `mount_point` and `total`/`free` space.
+///
+/// On macOS it will use an unsafe call to `getfsstat64`.
+///
+/// [Disks]: ../disks/struct.Disks.html
+pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
+    _get_partitions(true)
 }

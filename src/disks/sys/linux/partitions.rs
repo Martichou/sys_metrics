@@ -6,16 +6,7 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-/// Return a Vec of [Disks] with their minimal informations.
-///
-/// Contains `name`, `mount_point` and `total`/`free` space.
-///
-/// On linux it will get them from `/proc/mounts`.
-///
-/// On macOS it will use an unsafe call to `getfsstat64`.
-///
-/// [Disks]: ../disks/struct.Disks.html
-pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
+fn _get_partitions(physical: bool) -> Result<Vec<Disks>, Error> {
     let mut vdisks: Vec<Disks> = Vec::new();
     let file = File::open("/proc/mounts")?;
     let mut file = BufReader::with_capacity(6144, file);
@@ -26,7 +17,7 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
         let name = fields.next().unwrap();
         let path = fields.next().unwrap();
         let filesys = fields.next().unwrap();
-        if !is_physical_filesys(filesys) {
+        if physical && !is_physical_filesys(filesys) {
             line.clear();
             continue;
         }
@@ -41,4 +32,26 @@ pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
     }
 
     Ok(vdisks)
+}
+
+/// Return a Vec of [Disks] (physical and virtual) with their minimal informations.
+///
+/// Contains `name`, `mount_point` and `total`/`free` space.
+///
+/// On linux it will get them from `/proc/mounts`.
+///
+/// [Disks]: ../disks/struct.Disks.html
+pub fn get_partitions() -> Result<Vec<Disks>, Error> {
+    _get_partitions(false)
+}
+
+/// Return a Vec of [Disks] (physical) with their minimal informations.
+///
+/// Contains `name`, `mount_point` and `total`/`free` space.
+///
+/// On linux it will get them from `/proc/mounts`.
+///
+/// [Disks]: ../disks/struct.Disks.html
+pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
+    _get_partitions(true)
 }

@@ -4,6 +4,8 @@ pub use sys::*;
 
 use serde::Serialize;
 /// Struct containing the memory (ram/swap) information.
+///
+/// All values are in KB.
 #[derive(Debug, Clone, Serialize, Default)]
 pub struct Memory {
     pub total: u64,
@@ -24,6 +26,8 @@ impl Memory {
 }
 
 /// Struct containing the memory swap information.
+///
+/// All values are in KB.
 #[derive(Debug, Clone, Serialize)]
 pub struct Swap {
     pub total: u64,
@@ -31,6 +35,7 @@ pub struct Swap {
     pub used: u64,
 }
 
+#[doc(hidden)]
 #[cfg(target_os = "macos")]
 use mach::vm_types::natural_t;
 

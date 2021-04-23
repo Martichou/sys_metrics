@@ -42,8 +42,6 @@ pub struct utmp {
 /// Get the currently logged users.
 ///
 /// On linux it will get them from `/var/run/utmp`. It will use the C's UTMP Struct and the unsafe read C's function.
-///
-/// On macOS it will use unsafes call to multiple OSX specific functions [setutxent, getutxent] (the struct is UTMPX for the inner usage).
 pub fn get_users() -> Result<Vec<String>, Error> {
     let mut users: Vec<String> = Vec::new();
     let utmp_file = File::open("/var/run/utmp")?;

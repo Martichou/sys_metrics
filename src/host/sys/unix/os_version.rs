@@ -4,7 +4,7 @@ use crate::to_str;
 use libc::utsname;
 use std::io::Error;
 
-/// Get the `os_version` (distro + release).
+/// Get the `os_version`.
 pub fn get_os_version() -> Result<String, Error> {
     let x = host::get_uname()?;
     let mut ret = String::with_capacity(x.sysname.len() + x.release.len() + 1);

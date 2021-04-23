@@ -8,20 +8,6 @@ use std::io::Error;
 /// In Linux, the [LoadAvg] is technically believed to be a running average
 /// of processes in it’s (kernel) execution queue tagged as running or uninterruptible.
 ///
-/// # Exemples
-/// ```
-/// use sys_metrics::cpu::LoadAvg;
-/// use sys_metrics::cpu::get_loadavg;
-///
-/// let loadavg: LoadAvg = match get_loadavg() {
-///     Ok(val) => val,
-///     Err(x) => panic!(x),
-/// };
-///
-/// // Should print your system load avg
-/// println!("{:?}", loadavg);
-/// ```
-///
 /// [LoadAvg]: ../cpu/struct.LoadAvg.html
 pub fn get_loadavg() -> Result<LoadAvg, Error> {
     let mut data: [c_double; 3] = [0.0, 0.0, 0.0];

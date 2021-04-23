@@ -12,17 +12,17 @@
 //! use sys_metrics::{cpu::*, disks::*, host::*, memory::*};
 //!
 //! fn main() {
-//! dbg!(get_host_info());
-//! dbg!(get_uuid());
-//! dbg!(get_cpufreq());
-//! dbg!(get_cpustats());
-//! dbg!(get_partitions_physical());
-//! dbg!(get_iostats());
-//! dbg!(get_iostats_physical());
-//! dbg!(get_users());
-//! dbg!(get_cpu_logical_count());
-//! dbg!(get_memory());
-//! dbg!(get_swap());
+//!     dbg!(get_host_info());
+//!     dbg!(get_uuid());
+//!     dbg!(get_cpufreq());
+//!     dbg!(get_cpustats());
+//!     dbg!(get_partitions_physical());
+//!     dbg!(get_iostats());
+//!     dbg!(get_iostats_physical());
+//!     dbg!(get_users());
+//!     dbg!(get_cpu_logical_count());
+//!     dbg!(get_memory());
+//!     dbg!(get_swap());
 //! }
 //! ```
 
@@ -32,7 +32,7 @@ pub mod cpu;
 pub mod disks;
 /// Host system information
 pub mod host;
-/// Memory and swap information
+/// Memory information
 pub mod memory;
 
 use libc::c_char;
@@ -42,7 +42,7 @@ use std::fs;
 #[cfg(target_os = "linux")]
 use std::io::Error;
 
-// Static reference to the page_size for memory
+/// Static reference to the page_size for memory
 #[cfg(target_os = "macos")]
 lazy_static::lazy_static! {
     static ref PAGE_SIZE: u64 = {
@@ -59,6 +59,7 @@ pub(crate) fn read_and_trim(path: &str) -> Result<String, Error> {
     Ok(content.trim().to_owned())
 }
 
+/// Convert c_char (string in C) to a str in Rust
 #[inline]
 pub(crate) fn to_str<'a>(s: *const c_char) -> &'a str {
     unsafe {

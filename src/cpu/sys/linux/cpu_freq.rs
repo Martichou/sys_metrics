@@ -7,21 +7,6 @@ use std::{
 /// Get the cpufreq as f64.
 ///
 /// On linux it will return the first frequency it see from `/proc/cpuinfo` (key: cpu MHz).
-///
-/// And on macOS it will make a syscall which will return the cpufreq (macOS doesn't seems to have per-core clock).
-///
-/// # Exemples
-/// ```
-/// use sys_metrics::cpu::get_cpufreq;
-///
-/// let cpufreq: f64 = match get_cpufreq() {
-///     Ok(val) => val,
-///     Err(x) => panic!(x),
-/// };
-///
-/// // Should print your cpufreq as mHz
-/// println!("{}", cpufreq);
-/// ```
 pub fn get_cpufreq() -> Result<f64, Error> {
     let file = File::open("/proc/cpuinfo")?;
     let mut file = BufReader::with_capacity(1024, file);

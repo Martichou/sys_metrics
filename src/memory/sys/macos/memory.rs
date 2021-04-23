@@ -23,6 +23,7 @@ extern "C" {
 /// Return the [Memory] struct.
 ///
 /// Will use unsafe syscall due to specific OSX implementation.
+///
 /// Note that shared, buffers and cached are not used nor declared on MacOS, and so those value are zeroed.
 ///
 /// [Memory]: ../memory/struct.Memory.html
@@ -98,6 +99,7 @@ pub fn get_swap() -> Result<Swap, Error> {
     }
     let swap_info = unsafe { swap_info.assume_init() };
 
+    // Compute the values from the swap_info and divide by 1024 for kb
     Ok(Swap {
         total: swap_info.xsu_total / 1024,
         free: swap_info.xsu_avail / 1024,

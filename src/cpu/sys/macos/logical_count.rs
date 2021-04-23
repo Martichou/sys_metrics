@@ -3,8 +3,6 @@ use std::io::Error;
 
 /// Return the number of logical core the system has.
 ///
-/// On linux it will gather the info from libc's sysconf or sched_getaffinity as a fallback.
-///
 /// And on macOS it will make a syscall to sysctl with hw.logicalcpu.
 pub fn get_cpu_logical_count() -> Result<i64, Error> {
     let mut data: c_uint = 0;
