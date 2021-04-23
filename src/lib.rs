@@ -6,39 +6,23 @@
 //!  * Disks
 //!  * Host
 //!  * Memory
-//!  * Networks (wip)
 //!
 //! ## Quick start
 //! ```
-//! use sys_metrics::{cpu::*, disks::*, host::*};
+//! use sys_metrics::{cpu::*, disks::*, host::*, memory::*};
 //!
-//! fn main() -> Result<(), std::io::Error> {
-//!     let host_info = match get_host_info() {
-//!         Ok(val) => val,
-//!         Err(x) => return Err(x),
-//!     };
-//!
-//!     let _uuid = get_uuid().expect("Cannot retrieve UUID");
-//!     let _os = host_info.os_version;
-//!     let _hostname = host_info.hostname;
-//!     let _uptime = host_info.uptime;
-//!     let _cpufreq = match get_cpufreq() {
-//!         Ok(val) => val as i64,
-//!         Err(_) => -1,
-//!     };
-//!     let _loadavg = host_info.loadavg;
-//!     let _disks = match get_partitions_physical() {
-//!         Ok(val) => Some(val),
-//!         Err(_) => None,
-//!     };
-//!     let _iostats = match get_iostats() {
-//!         Ok(val) => Some(val),
-//!         Err(_) => None,
-//!     };
-//!     let _memory = host_info.memory;
-//!     let _users = get_users();
-//!
-//!     Ok(())
+//! fn main() {
+//! dbg!(get_host_info());
+//! dbg!(get_uuid());
+//! dbg!(get_cpufreq());
+//! dbg!(get_cpustats());
+//! dbg!(get_partitions_physical());
+//! dbg!(get_iostats());
+//! dbg!(get_iostats_physical());
+//! dbg!(get_users());
+//! dbg!(get_cpu_logical_count());
+//! dbg!(get_memory());
+//! dbg!(get_swap());
 //! }
 //! ```
 
@@ -50,10 +34,6 @@ pub mod disks;
 pub mod host;
 /// Memory and swap information
 pub mod memory;
-
-mod models;
-
-pub use models::*;
 
 use libc::c_char;
 use std::ffi::CStr;

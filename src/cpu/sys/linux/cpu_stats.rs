@@ -1,6 +1,5 @@
-use crate::models;
+use crate::cpu::CpuStats;
 
-use models::CpuStats;
 use std::io::Error;
 use std::{
     fs::File,
@@ -21,7 +20,7 @@ use std::{
 //	9th column : guest = time spent running a virtual CPU for guest operating systems under the control of the Kernel
 //	10th column: guest_nice = time spent running a niced guest (virtual CPU for guest operating systems under the control of the Linux kernel)
 
-/// Get basic [CpuStat] info the host.
+/// Get basic [CpuStats] info the host.
 ///
 /// It only contains row information, to get the delta we need
 /// to get the diff between N and N-1.
@@ -30,7 +29,7 @@ use std::{
 ///
 /// On macOS it will [TODO].
 ///
-/// [CpuStat]: ../struct.CpuStat.html
+/// [CpuStats]: ../cpu/struct.CpuStats.html
 pub fn get_cpustats() -> Result<CpuStats, Error> {
     let file = File::open("/proc/stat")?;
     let mut file = BufReader::with_capacity(1024, file);

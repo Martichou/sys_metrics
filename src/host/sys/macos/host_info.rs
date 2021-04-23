@@ -1,11 +1,10 @@
 use crate::cpu;
 use crate::host;
+use crate::host::{self, HostInfo};
 use crate::memory;
-use crate::models;
 use crate::to_str;
 
 use libc::{c_void, sysctl, timeval};
-use models::HostInfo;
 use std::io::Error;
 use std::time::Duration;
 
@@ -18,7 +17,7 @@ use std::time::Duration;
 ///
 /// [get_loadavg]: ../cpu/fn.get_loadavg.html
 /// [get_memory]: ../memory/fn.get_memory.html
-/// [HostInfo]: ../struct.HostInfo.html
+/// [HostInfo]: ../host/struct.HostInfo.html
 pub fn get_host_info() -> Result<HostInfo, Error> {
     let x = host::get_uname()?;
 

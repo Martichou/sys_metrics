@@ -1,7 +1,5 @@
-use crate::disks::{disk_usage, is_physical_filesys};
-use crate::models;
+use crate::disks::{disk_usage, is_physical_filesys, Disks};
 
-use models::Disks;
 use std::io::Error;
 use std::{
     fs::File,
@@ -16,7 +14,7 @@ use std::{
 ///
 /// On macOS it will use an unsafe call to `getfsstat64`.
 ///
-/// [Disks]: ../struct.Disks.html
+/// [Disks]: ../disks/struct.Disks.html
 pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
     let mut vdisks: Vec<Disks> = Vec::new();
     let file = File::open("/proc/mounts")?;

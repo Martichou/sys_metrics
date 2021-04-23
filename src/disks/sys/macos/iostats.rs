@@ -1,4 +1,4 @@
-use crate::models;
+use crate::disks::IoStats;
 
 use core_foundation_sys::{
     base::{kCFAllocatorDefault, CFRelease},
@@ -13,7 +13,6 @@ use io_kit_sys::{
     IOServiceMatching, *,
 };
 use libc::{c_char, c_void};
-use models::IoStats;
 use std::ffi::CStr;
 use std::io::Error;
 use std::io::ErrorKind;
@@ -252,7 +251,7 @@ pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
 ///
 /// On macOS it will use unsafes call and detect if the disk is marked as Removable, if it's not... it's a physical device
 ///
-/// [IoStats]: ../struct.IoStats.html
+/// [IoStats]: ../disks/struct.IoStats.html
 pub fn get_iostats_physical() -> Result<Vec<IoStats>, Error> {
     let mut viostats: Vec<IoStats> = Vec::new();
 

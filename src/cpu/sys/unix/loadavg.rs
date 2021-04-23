@@ -1,7 +1,6 @@
-use crate::models;
+use crate::cpu::LoadAvg;
 
 use libc::{c_double, getloadavg};
-use models::LoadAvg;
 use std::io::Error;
 
 /// Returns the [LoadAvg] over the last 1, 5 and 15 minutes.
@@ -11,7 +10,7 @@ use std::io::Error;
 ///
 /// # Exemples
 /// ```
-/// use sys_metrics::LoadAvg;
+/// use sys_metrics::cpu::LoadAvg;
 /// use sys_metrics::cpu::get_loadavg;
 ///
 /// let loadavg: LoadAvg = match get_loadavg() {
@@ -23,7 +22,7 @@ use std::io::Error;
 /// println!("{:?}", loadavg);
 /// ```
 ///
-/// [LoadAvg]: ../struct.LoadAvg.html
+/// [LoadAvg]: ../cpu/struct.LoadAvg.html
 pub fn get_loadavg() -> Result<LoadAvg, Error> {
     let mut data: [c_double; 3] = [0.0, 0.0, 0.0];
 

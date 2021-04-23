@@ -1,6 +1,5 @@
-use crate::models;
+use crate::cpu::CpuStats;
 
-use models::CpuStats;
 use std::io::Error;
 use std::{fs::File, io::ErrorKind};
 

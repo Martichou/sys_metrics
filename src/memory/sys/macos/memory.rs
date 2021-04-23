@@ -1,6 +1,5 @@
+use crate::memory::{vm_statistics64, Memory, Swap};
 use crate::PAGE_SIZE;
-
-use crate::models;
 
 use mach::{
     kern_return::kern_return_t,
@@ -8,8 +7,6 @@ use mach::{
     message::mach_msg_type_number_t,
     vm_types::integer_t,
 };
-use models::vm_statistics64;
-use models::Memory;
 use std::io::Error;
 
 extern "C" {
@@ -25,13 +22,10 @@ extern "C" {
 
 /// Return the [Memory] struct.
 ///
-/// Only contains the virtual/swap memory total/available.
+/// Will use unsafe syscall due to specific OSX implementation.
+/// Note that shared, buffers and cached are not used nor declared on MacOS, and so those value are zeroed.
 ///
-/// On linux it will get them from the sysinfo.
-///
-/// On macOS it will use unsafe syscall due to specific OSX implementation.
-///
-/// [Memory]: ../struct.Memory.html
+/// [Memory]: ../memory/struct.Memory.html
 pub fn get_memory() -> Result<Memory, Error> {
     let count = 38;
     // ALLOCATE A PORT
@@ -51,18 +45,16 @@ pub fn get_memory() -> Result<Memory, Error> {
 
     // ASSUME VM_STATS IS INIT
     let vm_stats = unsafe { vm_stats.assume_init() };
-    // AVAILABLE VIRT MEMORY
-    let virt_avail = (vm_stats.active_count + vm_stats.free_count) as u64 * (*PAGE_SIZE);
 
     // TOTAL VIRTUAL MEMORY
     let mut name: [i32; 2] = [6, 24];
-    let mut virt_total = 0u64;
+    let mut total = 0u64;
     let mut length = std::mem::size_of::<u64>();
     if unsafe {
         libc::sysctl(
             name.as_mut_ptr(),
             2,
-            &mut virt_total as *mut u64 as *mut libc::c_void,
+            &mut total as *mut u64 as *mut libc::c_void,
             &mut length,
             std::ptr::null_mut(),
             0,
@@ -72,7 +64,22 @@ pub fn get_memory() -> Result<Memory, Error> {
         return Err(Error::last_os_error());
     }
 
-    // SWAP MEMORY
+    Ok(Memory {
+        total,
+        free: u64::from(vm_stats.free_count + vm_stats.speculative_count) * (*PAGE_SIZE),
+        used: u64::from(vm_stats.active_count + vm_stats.wire_count) * (*PAGE_SIZE),
+        shared: 0,
+        buffers: 0,
+        cached: 0,
+    })
+}
+
+/// Return the [Swap] struct.
+///
+/// It will get the info from syscall to sysinfo.
+///
+/// [Swap]: ../memory/struct.Swap.html
+pub fn get_swap() -> Result<Swap, Error> {
     let mut name: [i32; 2] = [2, 5];
     let mut swap_info = std::mem::MaybeUninit::<libc::xsw_usage>::uninit();
     let mut length = std::mem::size_of::<libc::xsw_usage>();
@@ -91,10 +98,9 @@ pub fn get_memory() -> Result<Memory, Error> {
     }
     let swap_info = unsafe { swap_info.assume_init() };
 
-    Ok(Memory {
-        total_virt: virt_total,
-        total_swap: swap_info.xsu_total,
-        avail_virt: virt_avail,
-        avail_swap: swap_info.xsu_avail,
+    Ok(Swap {
+        total: swap_info.xsu_total / 1024,
+        free: swap_info.xsu_avail / 1024,
+        used: swap_info.xsu_used / 1024,
     })
 }

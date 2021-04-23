@@ -1,4 +1,4 @@
-use sys_metrics::{cpu::*, disks::*, host::*};
+use sys_metrics::{cpu::*, disks::*, host::*, memory::*};
 
 #[allow(unused_must_use)]
 fn main() {
@@ -11,4 +11,6 @@ fn main() {
     dbg!(get_iostats_physical());
     dbg!(get_users());
     dbg!(get_cpu_logical_count());
+    dbg!(get_memory());
+    dbg!(get_swap());
 }

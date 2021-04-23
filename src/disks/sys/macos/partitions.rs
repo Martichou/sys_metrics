@@ -1,9 +1,7 @@
-use crate::disks::{disk_usage, is_physical_filesys};
-use crate::models;
+use crate::disks::{disk_usage, is_physical_filesys, Disks};
 use crate::to_str;
 
 use libc::statfs;
-use models::Disks;
 use std::io::Error;
 
 extern "C" {
@@ -18,7 +16,7 @@ extern "C" {
 ///
 /// On macOS it will use an unsafe call to `getfsstat64`.
 ///
-/// [Disks]: ../struct.Disks.html
+/// [Disks]: ../disks/struct.Disks.html
 pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {
     let expected_len = unsafe { getfsstat64(std::ptr::null_mut(), 0, 2) };
     let mut mounts: Vec<statfs> = Vec::with_capacity(expected_len as usize);

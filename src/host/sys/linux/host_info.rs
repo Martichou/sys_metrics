@@ -1,10 +1,7 @@
 use crate::cpu;
-use crate::host;
-use crate::memory;
-use crate::models;
+use crate::host::{self, HostInfo};
 use crate::to_str;
 
-use models::HostInfo;
 use std::io::{Error, ErrorKind};
 use std::time::Duration;
 
@@ -17,7 +14,7 @@ use std::time::Duration;
 ///
 /// [get_loadavg]: ../cpu/fn.get_loadavg.html
 /// [get_memory]: ../memory/fn.get_memory.html
-/// [HostInfo]: ../struct.HostInfo.html
+/// [HostInfo]: ../host/struct.HostInfo.html
 pub fn get_host_info() -> Result<HostInfo, Error> {
     let x = host::get_uname()?;
     let y = match host::sysinfo() {
@@ -27,7 +24,6 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
 
     Ok(HostInfo {
         loadavg: cpu::get_loadavg_from_sysinfo(&y),
-        memory: memory::get_memory_from_sysinfo(&y),
         uptime: get_uptime_from_sysinfo(&y).as_secs(),
         system: to_str(x.sysname.as_ptr()).to_owned(),
         os_version: host::get_os_version_from_uname(&x),

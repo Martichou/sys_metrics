@@ -1,6 +1,5 @@
-use crate::models;
+use crate::disks::IoStats;
 
-use models::IoStats;
 use std::io::Error;
 use std::{
     fs::File,
@@ -15,7 +14,7 @@ use std::{
 ///
 /// On macOS it will use unsafes call to multiple OSX specific functions.
 ///
-/// [IoStats]: ../struct.IoStats.html
+/// [IoStats]: ../disks/struct.IoStats.html
 pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
     let mut viostats: Vec<IoStats> = Vec::new();
     let file = File::open("/proc/diskstats")?;

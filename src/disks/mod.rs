@@ -3,8 +3,26 @@ mod sys;
 pub use sys::*;
 
 use libc::statvfs;
+use serde::Serialize;
 use std::ffi::CString;
 use std::io::Error;
+
+/// Struct containing a disk' information.
+#[derive(Debug, Clone, Serialize)]
+pub struct Disks {
+    pub name: String,
+    pub mount_point: String,
+    pub total_space: u64,
+    pub avail_space: u64,
+}
+
+/// Struct containing a disk_io (bytes read/wrtn) information.
+#[derive(Debug, Clone, Serialize)]
+pub struct IoStats {
+    pub device_name: String,
+    pub bytes_read: i64,
+    pub bytes_wrtn: i64,
+}
 
 /// Return the total/free space of a Disk from it's path (mount_point).
 pub(crate) fn disk_usage<P>(path: P) -> Result<(u64, u64), Error>

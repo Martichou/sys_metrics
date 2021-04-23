@@ -14,7 +14,7 @@ mod unix;
 pub use unix::*;
 
 #[cfg(target_os = "linux")]
-use crate::models::LoadAvg;
+use crate::cpu::LoadAvg;
 
 #[inline]
 #[cfg(target_os = "linux")]
