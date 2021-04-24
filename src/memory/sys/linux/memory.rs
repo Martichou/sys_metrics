@@ -32,7 +32,7 @@ pub fn get_memory() -> Result<Memory, Error> {
         }
 
         // Split the line at the : separator
-        let mut parts = line.splitn(2, ":");
+        let mut parts = line.splitn(2, ':');
         // Check if if the value we search is the splitted one
         // if so, return a pointer to the memory zone we'll modify.
         let field = match parts.next() {
