@@ -3,7 +3,7 @@ name = "sys_metrics"
 version = "0.1.51"
 authors = ["Martichou <martichou.andre@gmail.com>"]
 edition = "2018"
-
+documentation = "https://docs.rs/sys_metrics"
 repository = "https://github.com/Martichou/sys_metrics"
 description = "Cross-platform library to gather stats/information from the host"
 keywords = ["metrics", "sysinfo", "psutil", "stats", "heim"]
