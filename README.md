@@ -1,6 +1,7 @@
 sys_metrics
 ========
 [![crates.io](https://img.shields.io/crates/v/sys_metrics.svg)](https://crates.io/crates/sys_metrics)
+[![Docs.rs](https://docs.rs/sys_metrics/badge.svg)](https://docs.rs/rand)
 [![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](LICENSE)
 [![CI](https://github.com/Martichou/sys_metrics/workflows/CI/badge.svg)](https://github.com/Martichou/sys_metrics/actions)
 
