@@ -2,6 +2,7 @@ mod sys;
 
 pub use sys::*;
 
+use crate::cpu::CLOCK_TICKS;
 use serde::Serialize;
 
 /// Struct containing a cpu's loadavg information.
@@ -42,4 +43,31 @@ impl CpuStats {
     pub fn total_time(&self) -> i64 {
         self.busy_time() + self.idle_time()
     }
+}
+
+#[cfg(target_os = "macos")]
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, Hash, PartialOrd, PartialEq, Eq, Ord)]
+pub(crate) struct host_cpu_load_info {
+    user: mach::vm_types::natural_t,
+    system: mach::vm_types::natural_t,
+    idle: mach::vm_types::natural_t,
+    nice: mach::vm_types::natural_t,
+}
+
+#[cfg(target_os = "macos")]
+impl From<host_cpu_load_info> for CpuStats {
+	fn from(info: host_cpu_load_info) -> CpuStats {
+		let ticks = *CLOCK_TICKS;
+
+		CpuStats {
+            // Convert to i64 is pretty safe as info.user is a u32 at first
+            // we might be missing on the float part of the division...
+			user: (info.user as u64 / ticks) as i64,
+			system: (info.system as u64 / ticks) as i64,
+			idle: (info.idle as u64 / ticks) as i64,
+			nice: (info.nice as u64 / ticks) as i64,
+            ..Default::default()
+		}
+	}
 }

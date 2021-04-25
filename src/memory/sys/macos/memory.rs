@@ -1,6 +1,8 @@
 use crate::memory::{vm_statistics64, Memory, Swap};
 use crate::PAGE_SIZE;
 
+use mach::mach_port::mach_port_deallocate;
+use mach::traps::mach_task_self;
 use mach::{
     kern_return::kern_return_t,
     mach_types::{host_name_port_t, host_t},
@@ -39,10 +41,9 @@ pub fn get_memory() -> Result<Memory, Error> {
     // Is the port_deallocate really usefull ?
     // If I try to stay like vm_stat (https://opensource.apple.com/source/system_cmds/system_cmds-498.2/vm_stat.tproj/vm_stat.c)
     // there is not a single deallocation for the port whatsoever.
-    //
-    // if mach_port_deallocate(mach_task_self(), port) != 0 {
-    //     return Err(Error::last_os_error());
-    // }
+    if unsafe { mach_port_deallocate(mach_task_self(), port) } != 0 {
+        return Err(Error::last_os_error());
+    }
 
     // ASSUME VM_STATS IS INIT
     let vm_stats = unsafe { vm_stats.assume_init() };

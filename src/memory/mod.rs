@@ -16,6 +16,7 @@ pub struct Memory {
     pub cached: u64,
 }
 
+#[cfg(target_os = "linux")]
 impl Memory {
     /// Return the Memory struct with used defined based on other values.
     pub(crate) fn set_used(mut self) -> Self {
