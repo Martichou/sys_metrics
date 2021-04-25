@@ -37,7 +37,7 @@ pub fn get_cpustats() -> Result<CpuStats, Error> {
         let steal = fields.next().unwrap_or("0");
         let guest = fields.next().unwrap_or("0");
         let guest_nice = fields.next().unwrap_or("0");
-        
+
         let ticks = *CLOCK_TICKS as i64;
         // Return the struct, and parse to i64
         return Ok(CpuStats {

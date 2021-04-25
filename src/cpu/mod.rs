@@ -57,17 +57,17 @@ pub(crate) struct host_cpu_load_info {
 
 #[cfg(target_os = "macos")]
 impl From<host_cpu_load_info> for CpuStats {
-	fn from(info: host_cpu_load_info) -> CpuStats {
-		let ticks = *CLOCK_TICKS;
+    fn from(info: host_cpu_load_info) -> CpuStats {
+        let ticks = *CLOCK_TICKS;
 
-		CpuStats {
+        CpuStats {
             // Convert to i64 is pretty safe as info.user is a u32 at first
             // we might be missing on the float part of the division...
-			user: (info.user as u64 / ticks) as i64,
-			system: (info.system as u64 / ticks) as i64,
-			idle: (info.idle as u64 / ticks) as i64,
-			nice: (info.nice as u64 / ticks) as i64,
+            user: (info.user as u64 / ticks) as i64,
+            system: (info.system as u64 / ticks) as i64,
+            idle: (info.idle as u64 / ticks) as i64,
+            nice: (info.nice as u64 / ticks) as i64,
             ..Default::default()
-		}
-	}
+        }
+    }
 }
