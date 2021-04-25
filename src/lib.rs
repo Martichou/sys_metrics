@@ -48,7 +48,7 @@ lazy_static::lazy_static! {
     };
 }
 
-/// Function used if you want to divide ticked value by the host's jiffies (USER_HZ) value. (like CpuStats or IoStats)
+/// Function used if you want to divide ticked value by the host's jiffies (USER_HZ) value. (like CpuStats)
 ///
 /// See https://en.wikipedia.org/wiki/Jiffy_(time) for more information.
 pub fn clock_ticks() -> Result<u64, Error> {
