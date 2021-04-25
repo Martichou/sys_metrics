@@ -1,5 +1,4 @@
 use crate::cpu::CpuStats;
-use crate::cpu::CLOCK_TICKS;
 
 use std::io::Error;
 use std::{
@@ -37,20 +36,18 @@ pub fn get_cpustats() -> Result<CpuStats, Error> {
         let steal = fields.next().unwrap_or("0");
         let guest = fields.next().unwrap_or("0");
         let guest_nice = fields.next().unwrap_or("0");
-
-        let ticks = *CLOCK_TICKS as i64;
         // Return the struct, and parse to i64
         return Ok(CpuStats {
-            user: user.parse::<i64>().unwrap() / ticks,
-            nice: nice.parse::<i64>().unwrap() / ticks,
-            system: system.parse::<i64>().unwrap() / ticks,
-            idle: idle.parse::<i64>().unwrap() / ticks,
-            iowait: iowait.parse::<i64>().unwrap() / ticks,
-            irq: irq.parse::<i64>().unwrap() / ticks,
-            softirq: softirq.parse::<i64>().unwrap() / ticks,
-            steal: steal.parse::<i64>().unwrap() / ticks,
-            guest: guest.parse::<i64>().unwrap() / ticks,
-            guest_nice: guest_nice.parse::<i64>().unwrap() / ticks,
+            user: user.parse::<i64>().unwrap(),
+            nice: nice.parse::<i64>().unwrap(),
+            system: system.parse::<i64>().unwrap(),
+            idle: idle.parse::<i64>().unwrap(),
+            iowait: iowait.parse::<i64>().unwrap(),
+            irq: irq.parse::<i64>().unwrap(),
+            softirq: softirq.parse::<i64>().unwrap(),
+            steal: steal.parse::<i64>().unwrap(),
+            guest: guest.parse::<i64>().unwrap(),
+            guest_nice: guest_nice.parse::<i64>().unwrap(),
         });
     }
 
