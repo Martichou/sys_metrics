@@ -48,7 +48,9 @@ lazy_static::lazy_static! {
     };
 }
 
-/// Function used if you want to divide ticked value by the host's JIFFIE (USER_HZ) value. (like CpuStats or IoStats)
+/// Function used if you want to divide ticked value by the host's jiffies (USER_HZ) value. (like CpuStats or IoStats)
+///
+/// See https://en.wikipedia.org/wiki/Jiffy_(time) for more information.
 pub fn clock_ticks() -> Result<u64, Error> {
     let result = unsafe { libc::sysconf(libc::_SC_CLK_TCK) };
 
@@ -60,7 +62,7 @@ pub fn clock_ticks() -> Result<u64, Error> {
 }
 
 lazy_static::lazy_static! {
-    /// Time units in JIFFIE (USER_HZ)
+    /// Time units in jiffies (USER_HZ) (https://en.wikipedia.org/wiki/Jiffy_(time))
     pub static ref CLOCK_TICKS: u64 = clock_ticks().expect("Unable to determine CPU number of ticks per second");
 }
 
