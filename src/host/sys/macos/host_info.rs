@@ -1,6 +1,5 @@
 use crate::cpu;
 use crate::host::{self, HostInfo};
-use crate::memory;
 use crate::to_str;
 
 use libc::{c_void, sysctl, timeval};
