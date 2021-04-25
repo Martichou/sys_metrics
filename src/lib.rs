@@ -37,7 +37,6 @@ use libc::c_char;
 use std::ffi::CStr;
 #[cfg(target_os = "linux")]
 use std::fs;
-#[cfg(target_os = "linux")]
 use std::io::Error;
 
 #[cfg(target_os = "macos")]
