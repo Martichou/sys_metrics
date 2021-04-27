@@ -16,6 +16,7 @@ pub fn get_users() -> Vec<String> {
 
             users.push(to_str((*entry).ut_user.as_ptr()).to_owned());
         }
+		libc::endutxent();
     }
 
     users
