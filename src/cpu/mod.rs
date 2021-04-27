@@ -12,34 +12,34 @@ pub struct LoadAvg {
     pub fifteen: f64,
 }
 
-/// Struct containing cpu stat information.
+/// Struct containing cpu times information.
 #[derive(Debug, Clone, Default, Serialize)]
-pub struct CpuStats {
-    pub user: i64,
-    pub nice: i64,
-    pub system: i64,
-    pub idle: i64,
-    pub iowait: i64,
-    pub irq: i64,
-    pub softirq: i64,
-    pub steal: i64,
-    pub guest: i64,
-    pub guest_nice: i64,
+pub struct CpuTimes {
+    pub user: u64,
+    pub nice: u64,
+    pub system: u64,
+    pub idle: u64,
+    pub iowait: u64,
+    pub irq: u64,
+    pub softirq: u64,
+    pub steal: u64,
+    pub guest: u64,
+    pub guest_nice: u64,
 }
 
-impl CpuStats {
+impl CpuTimes {
     /// Return the amount of time the system CPU as been busy
-    pub fn busy_time(&self) -> i64 {
+    pub fn busy_time(&self) -> u64 {
         self.user + self.nice + self.system + self.irq + self.softirq + self.steal
     }
 
     /// Return the amount of time the system CPU as been idling
-    pub fn idle_time(&self) -> i64 {
+    pub fn idle_time(&self) -> u64 {
         self.idle + self.iowait
     }
 
     /// Return the total amount of time of the CPU since boot
-    pub fn total_time(&self) -> i64 {
+    pub fn total_time(&self) -> u64 {
         self.busy_time() + self.idle_time()
     }
 }
@@ -55,11 +55,10 @@ pub(crate) struct host_cpu_load_info {
 }
 
 #[cfg(target_os = "macos")]
-impl From<host_cpu_load_info> for CpuStats {
-    fn from(info: host_cpu_load_info) -> CpuStats {
-        CpuStats {
-            // Convert to i64 is pretty safe as info.user is a u32 at first
-            // we might be missing on the float part of the division...
+impl From<host_cpu_load_info> for CpuTimes {
+    fn from(info: host_cpu_load_info) -> CpuTimes {
+        CpuTimes {
+            // Convert to u64 is pretty safe as info.user is a u32 at first
             user: info.user.into(),
             system: info.system.into(),
             idle: info.idle.into(),
@@ -67,4 +66,10 @@ impl From<host_cpu_load_info> for CpuStats {
             ..Default::default()
         }
     }
+}
+#[derive(Debug, Clone, Default, Serialize)]
+pub struct CpuStats {
+    pub interrupts: u64,
+    pub ctx_switches: u64,
+    pub soft_interrupts: u64,
 }
