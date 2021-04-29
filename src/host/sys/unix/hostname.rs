@@ -12,6 +12,6 @@ pub fn get_hostname() -> Result<String, Error> {
 
 /// Inlined function to get the `hostname` from a reference of uname.
 #[inline]
-pub fn get_hostname_from_uname(uts: &utsname) -> String {
+pub(crate) fn get_hostname_from_uname(uts: &utsname) -> String {
     to_str(uts.nodename.as_ptr()).to_owned()
 }

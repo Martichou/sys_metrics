@@ -4,4 +4,5 @@ mod uname;
 
 pub use hostname::*;
 pub use os_version::*;
-pub use uname::*;
+
+pub(crate) use uname::*;

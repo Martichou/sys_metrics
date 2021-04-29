@@ -1,4 +1,3 @@
-use libc::utsname;
 use std::io::Error;
 
 /// Return a utsname instance
@@ -7,7 +6,7 @@ use std::io::Error;
 ///
 /// [get_os_version_from_uname]: ../host/fn.get_os_version_from_uname.html
 /// [get_hostname_from_uname]: ../host/fn.get_hostname_from_uname.html
-pub fn get_uname() -> Result<utsname, Error> {
+pub(crate) fn get_uname() -> Result<libc::utsname, Error> {
     let mut ret = std::mem::MaybeUninit::uninit();
 
     if unsafe { libc::uname(ret.as_mut_ptr()) } == -1 {
