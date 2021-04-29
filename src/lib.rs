@@ -63,7 +63,7 @@ pub fn clock_ticks() -> Result<u64, Error> {
 
 lazy_static::lazy_static! {
     /// Time units in jiffies (USER_HZ) (https://en.wikipedia.org/wiki/Jiffy_(time))
-    pub static ref CLOCK_TICKS: u64 = clock_ticks().expect("Unable to determine CPU number of ticks per second");
+    pub(crate) static ref CLOCK_TICKS: u64 = clock_ticks().expect("Unable to determine CPU number of ticks per second");
 }
 
 /// Read from path to content, trim it and return the String
