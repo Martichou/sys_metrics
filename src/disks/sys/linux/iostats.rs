@@ -1,10 +1,17 @@
 use crate::disks::IoStats;
 
-use std::io::Error;
+use std::io::{Error, ErrorKind};
 use std::{
     fs::File,
     io::{BufRead, BufReader},
 };
+
+// https://github.com/heim-rs/heim/blob/ad691385940babcab857b1e19ebe95af35b8d70e/heim-disk/src/sys/linux/counters.rs#L21
+// Magic value shared accross almost all Linux source code
+// Despite this value can be queried at runtime
+// via /sys/block/{DISK}/queue/hw_sector_size and results may vary
+// between 1k, 2k, or 4k... 512 appears to be a magic constant used.
+const DISK_SECTOR_SIZE: u64 = 512;
 
 fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
     let mut viostats: Vec<IoStats> = Vec::new();
@@ -13,14 +20,9 @@ fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
 
     let mut line = String::with_capacity(512);
     while file.read_line(&mut line)? != 0 {
-        let mut fields = line.split_whitespace();
-        let name = fields.nth(2).unwrap();
-        let byte_r = fields.nth(2).unwrap();
-        let byte_w = fields.nth(3).unwrap();
-        if fields.count() < 4 {
-            line.clear();
-            continue;
-        }
+        let mut fields = line.split_whitespace().skip(2);
+
+        let name = fields.next().unwrap();
         // Based on the sysstat code:
         // https://github.com/sysstat/sysstat/blob/1c711c1fd03ac638cfc1b25cdf700625c173fd2c/common.c#L200
         // Some devices may have a slash in their name (eg. cciss/c0d0...) so replace them with `!`
@@ -32,10 +34,26 @@ fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
                 continue;
             }
         }
+        let read_count = fields.next().unwrap();
+        let mut fields = fields.skip(1);
+        let read_bytes = fields.next().unwrap();
+        let write_count = fields.next().unwrap();
+        let mut fields = fields.skip(1);
+        let write_bytes = fields.next().unwrap();
+        let mut fields = fields.skip(2);
+        // Seconds
+        let busy_time = fields.next().unwrap();
+
+        if fields.count() < 3 {
+            return Err(Error::new(ErrorKind::Other, "Invalid /proc/diskstats"));
+        }
         viostats.push(IoStats {
             device_name: name.to_owned(),
-            bytes_read: byte_r.parse::<i64>().unwrap() * 512,
-            bytes_wrtn: byte_w.parse::<i64>().unwrap() * 512,
+            read_count: read_count.parse().unwrap(),
+            read_bytes: read_bytes.parse::<u64>().unwrap() * DISK_SECTOR_SIZE,
+            write_count: write_count.parse().unwrap(),
+            write_bytes: write_bytes.parse::<u64>().unwrap() * DISK_SECTOR_SIZE,
+            busy_time: busy_time.parse().unwrap(),
         });
         line.clear();
     }

@@ -33,6 +33,9 @@ pub mod host;
 /// Memory information
 pub mod memory;
 
+#[cfg(target_os = "macos")]
+pub mod utils;
+
 use libc::c_char;
 use std::ffi::CStr;
 #[cfg(target_os = "linux")]

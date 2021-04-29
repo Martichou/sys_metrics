@@ -1,10 +1,9 @@
 use crate::disks::IoStats;
+use crate::utils::KeyVal;
 
 use core_foundation_sys::{
     base::{kCFAllocatorDefault, CFRelease},
-    dictionary::{CFDictionaryGetValueIfPresent, CFDictionaryRef},
-    number::{CFBooleanGetValue, CFBooleanRef, CFNumberGetValue, CFNumberRef},
-    string::{CFStringGetCString, CFStringRef},
+    dictionary::CFDictionaryRef,
 };
 use io_kit_sys::{
     kIOMasterPortDefault,
@@ -13,9 +12,7 @@ use io_kit_sys::{
     IOServiceMatching, *,
 };
 use libc::{c_char, c_void};
-use std::ffi::CStr;
 use std::io::Error;
-use std::io::ErrorKind;
 
 /// Clear the pointers for dict and release disk objects
 unsafe fn release_c_ptr_iostats(
@@ -107,26 +104,8 @@ unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
         let props_dict = props_dict.assume_init();
 
         if physical {
-            let mut removable_ref = std::mem::MaybeUninit::<CFBooleanRef>::uninit();
-            if CFDictionaryGetValueIfPresent(
-                parent_dict,
-                CFSTR(b"Removable\0".as_ptr() as *mut i8) as *mut c_void,
-                removable_ref.as_mut_ptr() as *mut *const c_void,
-            ) == 0
-            {
-                release_c_ptr_iostats(
-                    parent_dict as *mut c_void,
-                    props_dict as *mut c_void,
-                    disk,
-                    parent,
-                );
-                return Err(Error::new(
-                    ErrorKind::Other,
-                    "CFDictionaryGetValueIfPresent: Removable not found in the parent_dict",
-                ));
-            }
-            let removable_ref = removable_ref.assume_init();
-            if CFBooleanGetValue(removable_ref) {
+            let is_one = parent_dict.get_bool("Removable\0")?;
+            if is_one {
                 release_c_ptr_iostats(
                     parent_dict as *mut c_void,
                     props_dict as *mut c_void,
@@ -138,118 +117,44 @@ unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
             }
         }
 
-        // Get the stats dictionnary if it exists
-        let mut stats_dict = std::mem::MaybeUninit::<CFDictionaryRef>::uninit();
-        if CFDictionaryGetValueIfPresent(
-            props_dict as *mut _,
-            CFSTR(b"Statistics\0".as_ptr() as *mut i8) as *mut c_void,
-            &mut stats_dict as *mut _ as *mut *const c_void,
-        ) == 0
-        {
-            release_c_ptr_iostats(
-                parent_dict as *mut c_void,
-                props_dict as *mut c_void,
-                disk,
-                parent,
-            );
-            return Err(Error::new(
-                ErrorKind::Other,
-                "CFDictionaryGetValueIfPresent: Statistics not found in the props_dict",
-            ));
-        }
-        let stats_dict = stats_dict.assume_init();
+        // Get the value we're interested in from the stats_dict
+        let result = || -> Result<IoStats, Error> {
+            // Get the stats dictionnary if it exists
+            let stats_dict = props_dict.get_dict("Statistics\0")?;
+            // Get the values from the stats_dict
+            let read_count = stats_dict.get_i64("Operations (Read)\0")? as u64;
+            let read_bytes = stats_dict.get_i64("Bytes (Read)\0")? as u64;
+            let write_count = stats_dict.get_i64("Operations (Write)\0")? as u64;
+            let write_bytes = stats_dict.get_i64("Bytes (Write)\0")? as u64;
+            let busy_time = (stats_dict.get_i64("Total Time (Read)\0")?
+                + stats_dict.get_i64("Total Time (Write)\0")?) as u64;
+            let device_name = parent_dict.get_string("BSD Name\0")?;
 
-        // Get the number of bytes read for the current disk
-        let mut read_bytes = 0i64;
-        let mut read_bytes_nbr = std::mem::MaybeUninit::<CFNumberRef>::uninit();
-        if CFDictionaryGetValueIfPresent(
-            stats_dict,
-            CFSTR(b"Bytes (Read)\0".as_ptr() as *mut i8) as *mut c_void,
-            read_bytes_nbr.as_mut_ptr() as *mut *const c_void,
-        ) == 0
-        {
-            release_c_ptr_iostats(
-                parent_dict as *mut c_void,
-                props_dict as *mut c_void,
-                disk,
-                parent,
-            );
-            return Err(Error::new(
-                ErrorKind::Other,
-                "CFDictionaryGetValueIfPresent: Bytes Read not found in the stats_dict",
-            ));
-        }
-        let number = read_bytes_nbr.assume_init();
-        CFNumberGetValue(number, 4, &mut read_bytes as *mut _ as *mut c_void);
+            Ok(IoStats {
+                device_name,
+                read_count,
+                read_bytes,
+                write_count,
+                write_bytes,
+                busy_time,
+            })
+        };
 
-        // Get the number of bytes written for the current disk
-        let mut write_bytes = 0i64;
-        let mut write_bytes_nbr = std::mem::MaybeUninit::<CFNumberRef>::uninit();
-        if CFDictionaryGetValueIfPresent(
-            stats_dict,
-            CFSTR(b"Bytes (Write)\0".as_ptr() as *mut i8) as *mut c_void,
-            write_bytes_nbr.as_mut_ptr() as *mut *const c_void,
-        ) == 0
-        {
-            release_c_ptr_iostats(
-                parent_dict as *mut c_void,
-                props_dict as *mut c_void,
-                disk,
-                parent,
-            );
-            return Err(Error::new(
-                ErrorKind::Other,
-                "CFDictionaryGetValueIfPresent: Bytes Write not found in the stats_dict",
-            ));
-        }
-        let number = write_bytes_nbr.assume_init();
-        CFNumberGetValue(number, 4, &mut write_bytes as *mut _ as *mut c_void);
-
-        // Get the disk name (know as BSD Name)
-        let mut disk_name_ref = std::mem::MaybeUninit::<CFStringRef>::uninit();
-        if CFDictionaryGetValueIfPresent(
-            parent_dict,
-            CFSTR(b"BSD Name\0".as_ptr() as *mut i8) as *mut c_void,
-            disk_name_ref.as_mut_ptr() as *mut *const c_void,
-        ) == 0
-        {
-            release_c_ptr_iostats(
-                parent_dict as *mut c_void,
-                props_dict as *mut c_void,
-                disk,
-                parent,
-            );
-            return Err(Error::new(
-                ErrorKind::Other,
-                "CFDictionaryGetValueIfPresent: BSD Name not found in the parent_dict",
-            ));
-        }
-        let disk_name_ref = disk_name_ref.assume_init();
-        // Convert the CFString to String
-        let mut name = [0i8; 64];
-        if CFStringGetCString(disk_name_ref, name.as_mut_ptr(), 64, 134217984) == 0 {
-            release_c_ptr_iostats(
-                parent_dict as *mut c_void,
-                props_dict as *mut c_void,
-                disk,
-                parent,
-            );
-            return Err(Error::new(
-                ErrorKind::Other,
-                "Cannot get the buffer filled to transform the name of the disk",
-            ));
-        }
-        let name = match CStr::from_ptr(name.as_mut_ptr()).to_str() {
-            Ok(val) => val.to_owned(),
-            Err(_) => String::from("?"),
+        let curr_io = match result() {
+            Ok(val) => val,
+            Err(err) => {
+                release_c_ptr_iostats(
+                    parent_dict as *mut c_void,
+                    props_dict as *mut c_void,
+                    disk,
+                    parent,
+                );
+                return Err(err);
+            }
         };
 
         // Add the disk to the Vector of IoStats
-        viostats.push(IoStats {
-            device_name: name,
-            bytes_read: read_bytes,
-            bytes_wrtn: write_bytes,
-        });
+        viostats.push(curr_io);
 
         // Release dicts used and disk
         release_c_ptr_iostats(

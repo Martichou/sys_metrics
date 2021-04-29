@@ -25,8 +25,8 @@ mod tests {
 
         for s in stats {
             let _ = s.device_name;
-            let _ = s.bytes_read;
-            let _ = s.bytes_wrtn;
+            let _ = s.read_count;
+            let _ = s.write_bytes;
         }
     }
 }

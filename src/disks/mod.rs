@@ -20,8 +20,11 @@ pub struct Disks {
 #[derive(Debug, Clone, Serialize)]
 pub struct IoStats {
     pub device_name: String,
-    pub bytes_read: i64,
-    pub bytes_wrtn: i64,
+    pub read_count: u64,
+    pub read_bytes: u64,
+    pub write_count: u64,
+    pub write_bytes: u64,
+    pub busy_time: u64,
 }
 
 /// Return the total/free space of a Disk from it's path (mount_point).
