@@ -3,6 +3,7 @@ use criterion::{criterion_group, criterion_main};
 use sys_metrics::disks::*;
 
 pub fn disks_benches(c: &mut Criterion) {
+    c.bench_function("get_partitions", |b| b.iter(|| get_partitions()));
     c.bench_function("get_partitions_physical", |b| {
         b.iter(|| get_partitions_physical())
     });
