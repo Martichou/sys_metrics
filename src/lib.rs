@@ -32,6 +32,8 @@ pub mod disks;
 pub mod host;
 /// Memory information
 pub mod memory;
+/// Network information
+pub mod network;
 
 #[cfg(target_os = "macos")]
 pub mod macos_binding;

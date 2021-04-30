@@ -1,4 +1,4 @@
-use sys_metrics::{cpu::*, disks::*, host::*, memory::*};
+use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*};
 
 #[allow(unused_must_use)]
 fn main() {
@@ -16,4 +16,5 @@ fn main() {
     dbg!(get_uuid());
     dbg!(get_memory());
     dbg!(get_swap());
+    dbg!(get_net_iocounters());
 }
