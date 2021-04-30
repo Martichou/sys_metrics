@@ -1,12 +1,9 @@
+use crate::binding::getfsstat64;
 use crate::disks::{disk_usage, is_physical_filesys, Disks};
 use crate::to_str;
 
 use libc::statfs;
 use std::io::Error;
-
-extern "C" {
-    fn getfsstat64(buf: *mut statfs, bufsize: libc::c_int, flags: libc::c_int) -> libc::c_int;
-}
 
 fn _get_partitions(physical: bool) -> Result<Vec<Disks>, Error> {
     let expected_len = unsafe { getfsstat64(std::ptr::null_mut(), 0, 2) };

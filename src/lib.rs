@@ -34,7 +34,11 @@ pub mod host;
 pub mod memory;
 
 #[cfg(target_os = "macos")]
-pub mod utils;
+pub mod macos_binding;
+#[cfg(target_os = "macos")]
+pub mod macos_utils;
+#[cfg(target_os = "macos")]
+pub(crate) use macos_binding as binding;
 
 use libc::c_char;
 use std::ffi::CStr;

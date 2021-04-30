@@ -1,5 +1,5 @@
 use crate::disks::IoStats;
-use crate::utils::KeyVal;
+use crate::macos_utils::KeyVal;
 
 use core_foundation_sys::{
     base::{kCFAllocatorDefault, CFRelease},

@@ -1,26 +1,11 @@
-use crate::memory::{vm_statistics64, Memory};
+use crate::binding::{host_statistics64, mach_host_self, vm_statistics64};
+use crate::memory::Memory;
 use crate::PAGE_SIZE;
 
 use mach::mach_port::mach_port_deallocate;
 use mach::traps::mach_task_self;
-use mach::{
-    kern_return::kern_return_t,
-    mach_types::{host_name_port_t, host_t},
-    message::mach_msg_type_number_t,
-    vm_types::integer_t,
-};
+use mach::vm_types::integer_t;
 use std::io::Error;
-
-extern "C" {
-    fn mach_host_self() -> host_name_port_t;
-
-    fn host_statistics64(
-        host_priv: host_t,
-        flavor: integer_t,
-        host_info_out: *mut integer_t,
-        host_info_outCnt: *const mach_msg_type_number_t,
-    ) -> kern_return_t;
-}
 
 /// Return the [Memory] struct.
 ///

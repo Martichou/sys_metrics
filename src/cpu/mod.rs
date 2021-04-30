@@ -4,6 +4,9 @@ pub use sys::*;
 
 use serde::Serialize;
 
+#[cfg(target_os = "macos")]
+use crate::binding::vmmeter;
+
 /// Struct containing a cpu's loadavg information.
 #[derive(Debug, Clone, Serialize)]
 pub struct LoadAvg {
@@ -46,7 +49,7 @@ impl CpuTimes {
 
 #[cfg(target_os = "macos")]
 #[repr(C)]
-#[derive(Copy, Clone, Debug, Default, Hash, PartialOrd, PartialEq, Eq, Ord)]
+#[derive(Debug)]
 pub(crate) struct host_cpu_load_info {
     user: mach::vm_types::natural_t,
     system: mach::vm_types::natural_t,
@@ -69,7 +72,7 @@ impl From<host_cpu_load_info> for CpuTimes {
 }
 /// Struct containing cpu stats information.
 ///
-/// TODO - Details what each interrupts are:
+/// TODO (Linux) - Details what each interrupts are:
 /// - intr contains a LOT of different interrupts, might be worth detailling the important one
 /// - softirq contains 10 types of softirq
 #[derive(Debug, Clone, Default, Serialize)]
@@ -77,4 +80,15 @@ pub struct CpuStats {
     pub interrupts: u64,
     pub ctx_switches: u64,
     pub soft_interrupts: u64,
+}
+
+#[cfg(target_os = "macos")]
+impl From<vmmeter> for CpuStats {
+    fn from(info: vmmeter) -> CpuStats {
+        CpuStats {
+            interrupts: info.v_swtch.into(),
+            ctx_switches: info.v_intr.into(),
+            soft_interrupts: info.v_soft.into(),
+        }
+    }
 }
