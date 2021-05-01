@@ -28,7 +28,7 @@ pub struct IoStats {
 }
 
 /// Return the total/free space of a Disk from it's path (mount_point).
-pub(crate) fn disk_usage<P>(path: P) -> Result<(u64, u64), Error>
+pub fn disk_usage<P>(path: P) -> Result<(u64, u64), Error>
 where
     P: AsRef<[u8]>,
 {
