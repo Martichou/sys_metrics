@@ -8,7 +8,6 @@ use mach::{
 
 #[doc(hidden)]
 #[repr(C)]
-#[derive(Debug)]
 pub struct vmmeter {
     pub v_swtch: libc::c_uint,
     pub v_trap: libc::c_uint,
@@ -50,7 +49,6 @@ pub struct vmmeter {
 }
 
 #[doc(hidden)]
-#[cfg(target_os = "macos")]
 #[repr(C)]
 pub struct vm_statistics64 {
     pub free_count: natural_t,
@@ -77,6 +75,60 @@ pub struct vm_statistics64 {
     pub external_page_count: natural_t,
     pub internal_page_count: natural_t,
     pub total_uncompressed_pages_in_compressor: u64,
+}
+
+#[doc(hidden)]
+#[repr(C)]
+pub struct if_data64 {
+    pub ifi_type: libc::c_uchar,
+    pub ifi_typelen: libc::c_uchar,
+    pub ifi_physical: libc::c_uchar,
+    pub ifi_addrlen: libc::c_uchar,
+    pub ifi_hdrlen: libc::c_uchar,
+    pub ifi_recvquota: libc::c_uchar,
+    pub ifi_xmitquota: libc::c_uchar,
+    pub ifi_unused1: libc::c_uchar,
+    pub ifi_mtu: u32,
+    pub ifi_metric: u32,
+    pub ifi_baudrate: u64,
+    pub ifi_ipackets: u64,
+    pub ifi_ierrors: u64,
+    pub ifi_opackets: u64,
+    pub ifi_oerrors: u64,
+    pub ifi_collisions: u64,
+    pub ifi_ibytes: u64,
+    pub ifi_obytes: u64,
+    pub ifi_imcasts: u64,
+    pub ifi_omcasts: u64,
+    pub ifi_iqdrops: u64,
+    pub ifi_noproto: u64,
+    pub ifi_recvtiming: u32,
+    pub ifi_xmittiming: u32,
+    pub ifi_lastchange: libc::timeval,
+}
+
+#[doc(hidden)]
+#[repr(C)]
+pub struct if_msghdr2 {
+    pub ifm_msglen: libc::c_ushort,
+    pub ifm_version: libc::c_uchar,
+    pub ifm_type: libc::c_uchar,
+    pub ifm_addrs: libc::c_int,
+    pub ifm_flags: libc::c_int,
+    pub ifm_index: libc::c_ushort,
+    pub ifm_snd_len: libc::c_int,
+    pub ifm_snd_maxlen: libc::c_int,
+    pub ifm_snd_drops: libc::c_int,
+    pub ifm_timer: libc::c_int,
+    pub ifm_data: if_data64,
+}
+
+#[doc(hidden)]
+#[repr(C)]
+pub struct if_msghdr_partial {
+    pub ifm_msglen: libc::c_ushort,
+    pub ifm_version: libc::c_uchar,
+    pub ifm_type: libc::c_uchar,
 }
 
 /// https://developer.apple.com/documentation/kernel/host_flavor_t?language=objc

@@ -8,7 +8,6 @@ use std::os::unix::prelude::*;
 
 #[doc(hidden)]
 #[repr(C)]
-#[derive(Debug)]
 struct exit_status {
     pub e_termination: c_short,
     pub e_exit: c_short,
@@ -16,7 +15,6 @@ struct exit_status {
 
 #[doc(hidden)]
 #[repr(C)]
-#[derive(Debug)]
 struct ut_tv {
     pub tv_sec: i32,
     pub tv_usec: i32,
@@ -24,7 +22,6 @@ struct ut_tv {
 
 #[doc(hidden)]
 #[repr(C)]
-#[derive(Debug)]
 struct utmp {
     pub ut_type: c_short,
     pub ut_pid: pid_t,

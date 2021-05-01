@@ -49,7 +49,6 @@ impl CpuTimes {
 
 #[cfg(target_os = "macos")]
 #[repr(C)]
-#[derive(Debug)]
 pub(crate) struct host_cpu_load_info {
     user: mach::vm_types::natural_t,
     system: mach::vm_types::natural_t,
