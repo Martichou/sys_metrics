@@ -90,9 +90,3 @@ pub(crate) fn to_str<'a>(s: *const c_char) -> &'a str {
         std::str::from_utf8_unchecked(res)
     }
 }
-
-macro_rules! todo {
-    () => {{
-        Err(Error::new(ErrorKind::Other, "Not yet implemented"))
-    }};
-}
