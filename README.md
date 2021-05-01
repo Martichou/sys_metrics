@@ -6,14 +6,47 @@ sys_metrics
 [![CI](https://github.com/Martichou/sys_metrics/workflows/CI/badge.svg)](https://github.com/Martichou/sys_metrics/actions)
 
 `sys_metrics` is a WIP project intended to give an alternative to others tools which can be slower or provide too many useless informations.
+It will try to have at least the same functionality as [psutil](https://github.com/giampaolo/psutil) or [heim](https://github.com/heim-rs/heim).
 
-It's a synchronous library which try to be as fast as possible.
+It's a synchronous library which try to be freaking fast (maybe even the fastest) and as dependency-free as possible.
 
 WIP Notes
 --------------------------
 
 `sys_metrics` in it's WIP stage will only support Linux and macOS.
-The structure might not be perfect as of now and is subject to change. If you have a comment about it or anything else feel free to open an issue.
+The structure is subject to change from version to version. If you have a comment about it or anything else feel free to open an issue.
+
+Usage
+--------------------------
+
+Add the dependency to your `Cargo.toml`
+```toml
+[dependencies]
+sys_metrics = "0.1"
+```
+Example of usage: [main.rs](https://github.com/speculare-cloud/sys_metrics/tree/master/src/bin/main.rs)
+```rust
+use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*};
+
+fn main() {
+    dbg!(get_cpu_logical_count());
+    dbg!(get_cpufreq());
+    dbg!(get_cpustats());
+    dbg!(get_cputimes());
+    dbg!(get_loadavg());
+    dbg!(get_iostats_physical());
+    dbg!(get_partitions_physical());
+    dbg!(get_host_info());
+    dbg!(get_hostname());
+    dbg!(get_os_version());
+    dbg!(get_users());
+    dbg!(get_uuid());
+    dbg!(get_memory());
+    dbg!(get_swap());
+    dbg!(get_net_iocounters());
+}
+```
+For a more complexe example, check [speculare-client](https://github.com/speculare-cloud/speculare-client) > `src/harvest/data_harvest.rs`
 
 Benchmarks
 --------------------------
