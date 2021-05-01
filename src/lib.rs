@@ -9,19 +9,23 @@
 //!
 //! ## Quick start
 //! ```
-//! use sys_metrics::{cpu::*, disks::*, host::*, memory::*};
+//! use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*};
 //!
-//! dbg!(get_host_info());
-//! dbg!(get_uuid());
+//! dbg!(get_cpu_logical_count());
 //! dbg!(get_cpufreq());
 //! dbg!(get_cpustats());
-//! dbg!(get_partitions_physical());
-//! dbg!(get_iostats());
+//! dbg!(get_cputimes());
+//! dbg!(get_loadavg());
 //! dbg!(get_iostats_physical());
+//! dbg!(get_partitions_physical());
+//! dbg!(get_host_info());
+//! dbg!(get_hostname());
+//! dbg!(get_os_version());
 //! dbg!(get_users());
-//! dbg!(get_cpu_logical_count());
+//! dbg!(get_uuid());
 //! dbg!(get_memory());
 //! dbg!(get_swap());
+//! dbg!(get_net_iocounters());
 //! ```
 
 /// CPU information
