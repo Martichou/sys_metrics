@@ -74,7 +74,6 @@ fn net_pf_route() -> Result<Routes, Error> {
     let mut name: [libc::c_int; 6] = [libc::CTL_NET, libc::PF_ROUTE, 0, 0, libc::NET_RT_IFLIST2, 0];
     let mut length: libc::size_t = 0;
 
-    dbg!("Ho");
     if unsafe {
         sysctl(
             name.as_mut_ptr(),
@@ -88,7 +87,6 @@ fn net_pf_route() -> Result<Routes, Error> {
     {
         return Err(Error::last_os_error());
     }
-    dbg!("Ho", length);
 
     let mut data: Vec<u8> = Vec::with_capacity(length);
     if unsafe {
@@ -104,10 +102,10 @@ fn net_pf_route() -> Result<Routes, Error> {
     {
         return Err(Error::last_os_error());
     }
-
-    dbg!("Ho12");
-
     // Why is this needed ?
+    // -> Seems like as we use a call to sysctl, the call will fill the buffer
+    //    with various values at various index. The data.len() result as 0.
+    //    As we know the values has been set, we override the len().
     unsafe { data.set_len(length) };
     Ok(Routes { position: 0, data })
 }
@@ -130,7 +128,6 @@ pub fn get_net_iocounters() -> Result<Vec<IoCounters>, Error> {
             let first_nul = name.iter().position(|c| *c == b'\0').unwrap_or(0);
             let name = String::from_utf8_lossy(&name[..first_nul]).to_string();
 
-            dbg!(msg.ifm_msglen);
             Ok(IoCounters {
                 interface: name,
                 rx_bytes: msg.ifm_data.ifi_ibytes as u64,
