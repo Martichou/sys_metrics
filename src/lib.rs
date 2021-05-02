@@ -44,6 +44,8 @@ pub mod macos_binding;
 #[cfg(target_os = "macos")]
 pub mod macos_utils;
 #[cfg(target_os = "macos")]
+pub(crate) use macos_utils as utils;
+#[cfg(target_os = "macos")]
 pub(crate) use macos_binding as binding;
 
 use libc::c_char;
