@@ -55,7 +55,7 @@ Benchmarks
 ➜ cargo bench
 ```
 
-For reference you can check https://perf-ci.speculare.cloud:9642/ for comparaison across commits (enabled since #ba799da3).
+For reference you can check https://perf-ci.speculare.cloud for comparaison across commits (enabled since #ba799da3).
 
 Contributing
 --------------------------
