@@ -6,7 +6,7 @@ use std::io::Error;
 /// Get the currently logged users.
 ///
 /// Use unsafes call to multiple Unix specific functions [setutxent, getutxent].
-pub fn get_users() -> Result<Vec<String>, Error> {
+pub fn get_logged_users() -> Result<Vec<String>, Error> {
     let mut users: Vec<String> = Vec::new();
 
     unsafe { setutxent() };
@@ -23,6 +23,13 @@ pub fn get_users() -> Result<Vec<String>, Error> {
         }
         buffer = unsafe { getutxent() };
     }
+
+    Ok(users)
+}
+
+/// TODO - Return empty [] for now
+pub fn get_users() -> Result<Vec<String>, Error> {
+    let mut users: Vec<String> = Vec::new();
 
     Ok(users)
 }

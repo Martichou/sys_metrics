@@ -7,8 +7,8 @@ use std::{
 };
 
 fn _get_partitions(physical: bool) -> Result<Vec<Disks>, Error> {
-    let mut vdisks: Vec<Disks> = Vec::new();
     let file = File::open("/proc/mounts")?;
+    let mut vdisks: Vec<Disks> = Vec::new();
     let mut file = BufReader::with_capacity(6144, file);
 
     let mut line = String::with_capacity(512);

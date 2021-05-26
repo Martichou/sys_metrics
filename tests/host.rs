@@ -41,6 +41,6 @@ mod tests {
     #[test]
     fn test_users() {
         // TODO
-        let _users = get_users();
+        let _users = get_logged_users();
     }
 }

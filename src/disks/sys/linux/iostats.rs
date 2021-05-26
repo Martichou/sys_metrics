@@ -14,11 +14,11 @@ use std::{
 const DISK_SECTOR_SIZE: u64 = 512;
 
 fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
-    let mut viostats: Vec<IoStats> = Vec::new();
     let file = File::open("/proc/diskstats")?;
+    let mut viostats: Vec<IoStats> = Vec::new();
     let mut file = BufReader::with_capacity(2048, file);
 
-    let mut line = String::with_capacity(512);
+    let mut line = String::with_capacity(256);
     while file.read_line(&mut line)? != 0 {
         let mut fields = line.split_whitespace().skip(2);
 

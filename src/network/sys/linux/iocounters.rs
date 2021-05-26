@@ -12,11 +12,11 @@ use std::{
 /// [IoCounters]: ../network/struct.IoCounters.html
 pub fn get_net_iocounters() -> Result<Vec<IoCounters>, Error> {
     let file = File::open("/proc/net/dev")?;
+    let mut v_iocounters: Vec<IoCounters> = Vec::new();
     let mut file = BufReader::with_capacity(2048, file);
 
     let mut line_skip = 0;
-    let mut line = String::with_capacity(512);
-    let mut v_iocounters: Vec<IoCounters> = Vec::new();
+    let mut line = String::with_capacity(256);
     while file.read_line(&mut line)? != 0 {
         line_skip += 1;
         if line_skip < 3 {
@@ -25,7 +25,7 @@ pub fn get_net_iocounters() -> Result<Vec<IoCounters>, Error> {
         }
         let mut parts = line.splitn(2, ':');
         let interface = match parts.next() {
-            Some(str) => str.trim().to_string(),
+            Some(str) => str.trim().to_owned(),
             None => {
                 line.clear();
                 continue;

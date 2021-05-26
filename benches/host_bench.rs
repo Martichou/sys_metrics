@@ -7,6 +7,7 @@ pub fn miscs_benches(c: &mut Criterion) {
     c.bench_function("get_uuid", |b| b.iter(|| get_uuid()));
     c.bench_function("get_os_version", |b| b.iter(|| get_os_version()));
     c.bench_function("get_hostname", |b| b.iter(|| get_hostname()));
+    c.bench_function("get_logged_users", |b| b.iter(|| get_logged_users()));
     c.bench_function("get_users", |b| b.iter(|| get_users()));
 }
 

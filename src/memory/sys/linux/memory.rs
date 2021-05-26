@@ -18,7 +18,7 @@ pub fn get_memory() -> Result<Memory, Error> {
 
     let mut matched_lines = 0u8;
     let mut memory = Memory::default();
-    let mut line = String::with_capacity(512);
+    let mut line = String::with_capacity(64);
     while file.read_line(&mut line)? != 0 {
         // We only need 6 values which can be detected by their 4first bytes
         let first_bytes = &line.as_bytes()[..4];
