@@ -33,3 +33,29 @@ pub fn get_swap() -> Result<Swap, Error> {
         used: swap_info.xsu_used / 1024,
     })
 }
+
+/// Determine if the system uses Swap.
+///
+/// Check the value of vm.compressor_mode and return true if the return is 4, else otherwise.
+/// See: https://tr23.net/2014/02/04/memory-compression-settings-in-osx-10-9/
+pub fn has_swap() -> Result<bool, Error> {
+    let mut name: [i32; 2] = [2, 124];
+    let mut value = std::mem::MaybeUninit::<i32>::uninit();
+    let mut length = std::mem::size_of::<i32>();
+    if unsafe {
+        libc::sysctl(
+            name.as_mut_ptr(),
+            2,
+            value.as_mut_ptr() as *mut libc::c_void,
+            &mut length,
+            std::ptr::null_mut(),
+            0,
+        )
+    } != 0
+    {
+        return Err(Error::last_os_error());
+    }
+    let value = unsafe { value.assume_init() };
+
+    Ok(value == 4)
+}
