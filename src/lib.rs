@@ -21,11 +21,13 @@
 //! dbg!(get_host_info());
 //! dbg!(get_hostname());
 //! dbg!(get_os_version());
+//! dbg!(get_logged_users());
 //! dbg!(get_users());
 //! dbg!(get_uuid());
 //! dbg!(get_memory());
 //! dbg!(get_swap());
-//! dbg!(get_net_iocounters());
+//! dbg!(has_swap());
+//! dbg!(get_net_physical_iocounters());
 //! ```
 
 /// CPU information
