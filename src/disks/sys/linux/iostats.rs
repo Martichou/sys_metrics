@@ -4,6 +4,7 @@ use std::io::{Error, ErrorKind};
 use std::{
     fs::File,
     io::{BufRead, BufReader},
+    path::Path,
 };
 
 // https://github.com/heim-rs/heim/blob/ad691385940babcab857b1e19ebe95af35b8d70e/heim-disk/src/sys/linux/counters.rs#L21
@@ -13,6 +14,7 @@ use std::{
 // between 1k, 2k, or 4k... 512 appears to be a magic constant used.
 const DISK_SECTOR_SIZE: u64 = 512;
 
+#[inline]
 fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
     let file = File::open("/proc/diskstats")?;
     let mut viostats: Vec<IoStats> = Vec::new();
@@ -26,13 +28,10 @@ fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
         // Based on the sysstat code:
         // https://github.com/sysstat/sysstat/blob/1c711c1fd03ac638cfc1b25cdf700625c173fd2c/common.c#L200
         // Some devices may have a slash in their name (eg. cciss/c0d0...) so replace them with `!`
-        if physical {
-            let path =
-                std::ffi::CString::new(format!("/sys/block/{}/device", name.replace("/", "!")))?;
-            if unsafe { libc::access(path.as_ptr(), libc::F_OK) } != 0 {
-                line.clear();
-                continue;
-            }
+        if physical && !Path::new(&format!("/sys/block/{}/device", name.replace("/", "!"))).exists()
+        {
+            line.clear();
+            continue;
         }
         let read_count = fields.next().unwrap();
         let mut fields = fields.skip(1);

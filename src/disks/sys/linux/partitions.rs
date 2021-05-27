@@ -6,6 +6,7 @@ use std::{
     io::{BufRead, BufReader},
 };
 
+#[inline]
 fn _get_partitions(physical: bool) -> Result<Vec<Disks>, Error> {
     let file = File::open("/proc/mounts")?;
     let mut vdisks: Vec<Disks> = Vec::new();

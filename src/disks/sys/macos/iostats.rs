@@ -59,6 +59,7 @@ unsafe fn init_dicts(
     Ok(())
 }
 
+#[inline]
 unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
     let mut viostats: Vec<IoStats> = Vec::new();
 

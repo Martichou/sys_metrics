@@ -142,3 +142,8 @@ pub fn get_net_iocounters() -> Result<Vec<IoCounters>, Error> {
         })
         .collect()
 }
+
+/// TODO
+pub fn get_net_physical_iocounters() -> Result<Vec<IoCounters>, Error> {
+    Ok(vec![])
+}

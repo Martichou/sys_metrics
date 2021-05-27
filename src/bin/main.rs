@@ -17,5 +17,5 @@ fn main() {
     dbg!(get_uuid());
     dbg!(get_memory());
     dbg!(get_swap());
-    dbg!(get_net_iocounters());
+    dbg!(get_net_physical_iocounters());
 }

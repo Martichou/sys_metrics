@@ -5,6 +5,7 @@ use crate::to_str;
 use libc::statfs;
 use std::io::Error;
 
+#[inline]
 fn _get_partitions(physical: bool) -> Result<Vec<Disks>, Error> {
     let expected_len = unsafe { getfsstat64(std::ptr::null_mut(), 0, 2) };
     let mut mounts: Vec<statfs> = Vec::with_capacity(expected_len as usize);
