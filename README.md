@@ -46,7 +46,7 @@ fn main() {
     dbg!(get_net_iocounters());
 }
 ```
-For a more complexe example, check [speculare-client](https://github.com/speculare-cloud/speculare-client) > `src/harvest/data_harvest.rs`
+For a more complexe example, check [speculare-client/src/harvest/data_harvest.rs](https://github.com/speculare-cloud/speculare-client/blob/master/src/harvest/data_harvest.rs).
 
 Benchmarks
 --------------------------
