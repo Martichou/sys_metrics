@@ -16,15 +16,15 @@ const DISK_SECTOR_SIZE: u64 = 512;
 
 #[inline]
 fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
-    let file = File::open("/proc/diskstats")?;
+    let file = File::open("./test_file")?;
     let mut viostats: Vec<IoStats> = Vec::new();
     let mut file = BufReader::with_capacity(2048, file);
 
     let mut line = String::with_capacity(256);
     while file.read_line(&mut line)? != 0 {
-        let mut fields = line.split_whitespace().skip(2);
+        let mut fields = line.split_whitespace();
 
-        let name = fields.next().unwrap();
+        let name = fields.nth(2).unwrap();
         // Based on the sysstat code:
         // https://github.com/sysstat/sysstat/blob/1c711c1fd03ac638cfc1b25cdf700625c173fd2c/common.c#L200
         // Some devices may have a slash in their name (eg. cciss/c0d0...) so replace them with `!`
@@ -34,16 +34,13 @@ fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
             continue;
         }
         let read_count = fields.next().unwrap();
-        let mut fields = fields.skip(1);
-        let read_bytes = fields.next().unwrap();
+        let read_bytes = fields.nth(1).unwrap();
         let write_count = fields.next().unwrap();
-        let mut fields = fields.skip(1);
-        let write_bytes = fields.next().unwrap();
-        let mut fields = fields.skip(2);
+        let write_bytes = fields.nth(1).unwrap();
         // Seconds
-        let busy_time = fields.next().unwrap();
+        let busy_time = fields.nth(2).unwrap();
 
-        if fields.count() < 3 {
+        if fields.count() < 2 {
             return Err(Error::new(ErrorKind::Other, "Invalid /proc/diskstats"));
         }
         viostats.push(IoStats {
