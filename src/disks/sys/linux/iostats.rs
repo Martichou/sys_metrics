@@ -16,7 +16,7 @@ const DISK_SECTOR_SIZE: u64 = 512;
 
 #[inline]
 fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
-    let file = File::open("./test_file")?;
+    let file = File::open("/proc/diskstats")?;
     let mut viostats: Vec<IoStats> = Vec::new();
     let mut file = BufReader::with_capacity(2048, file);
 
