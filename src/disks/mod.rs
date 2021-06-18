@@ -18,7 +18,7 @@ pub struct Disks {
 
 /// Struct containing a disk_io (bytes read/wrtn) information.
 #[derive(Debug, Clone, Serialize)]
-pub struct IoStats {
+pub struct IoBlock {
     pub device_name: String,
     pub read_count: u64,
     pub read_bytes: u64,

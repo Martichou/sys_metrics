@@ -1,4 +1,4 @@
-use crate::disks::IoStats;
+use crate::disks::IoBlock;
 
 use std::io::{Error, ErrorKind};
 use std::{
@@ -15,9 +15,9 @@ use std::{
 const DISK_SECTOR_SIZE: u64 = 512;
 
 #[inline]
-fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
+fn _get_ioblocks(physical: bool) -> Result<Vec<IoBlock>, Error> {
     let file = File::open("/proc/diskstats")?;
-    let mut viostats: Vec<IoStats> = Vec::new();
+    let mut v_ioblocks: Vec<IoBlock> = Vec::new();
     let mut file = BufReader::with_capacity(2048, file);
 
     let mut line = String::with_capacity(256);
@@ -43,7 +43,7 @@ fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
         if fields.count() < 2 {
             return Err(Error::new(ErrorKind::Other, "Invalid /proc/diskstats"));
         }
-        viostats.push(IoStats {
+        v_ioblocks.push(IoBlock {
             device_name: name.to_owned(),
             read_count: read_count.parse().unwrap(),
             read_bytes: read_bytes.parse::<u64>().unwrap() * DISK_SECTOR_SIZE,
@@ -54,25 +54,25 @@ fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
         line.clear();
     }
 
-    Ok(viostats)
+    Ok(v_ioblocks)
 }
 
-/// Get basic [IoStats] (physical and virtual) info for each disks/partitions.
+/// Get basic [IoBlock] (physical and virtual) info for each disks/partitions.
 ///
 /// It only contains the `device_name` and the number of bytes `read`/`wrtn`.
 ///
 /// On linux it will get them from `/proc/diskstats`.
 ///
-/// [IoStats]: ../disks/struct.IoStats.html
-pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
-    _get_iostats(false)
+/// [IoBlock]: ../disks/struct.IoBlock.html
+pub fn get_ioblocks() -> Result<Vec<IoBlock>, Error> {
+    _get_ioblocks(false)
 }
 
-/// Get basic [IoStats] (physical) info for each physical disks.
+/// Get basic [IoBlock] (physical) info for each physical disks.
 ///
 /// On linux it will get them from `/proc/diskstats` and filter the result based on the access to their `/sys/block/{}`.
 ///
-/// [IoStats]: ../struct.IoStats.html
-pub fn get_iostats_physical() -> Result<Vec<IoStats>, Error> {
-    _get_iostats(true)
+/// [IoBlock]: ../struct.IoBlock.html
+pub fn get_physical_ioblocks() -> Result<Vec<IoBlock>, Error> {
+    _get_ioblocks(true)
 }

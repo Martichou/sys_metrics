@@ -1,5 +1,5 @@
-mod iostats;
+mod ioblocks;
 mod partitions;
 
-pub use iostats::*;
+pub use ioblocks::*;
 pub use partitions::*;

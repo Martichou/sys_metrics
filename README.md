@@ -34,16 +34,18 @@ fn main() {
     dbg!(get_cpustats());
     dbg!(get_cputimes());
     dbg!(get_loadavg());
-    dbg!(get_iostats_physical());
+    dbg!(get_physical_ioblocks());
     dbg!(get_partitions_physical());
     dbg!(get_host_info());
     dbg!(get_hostname());
     dbg!(get_os_version());
+    dbg!(get_logged_users());
     dbg!(get_users());
     dbg!(get_uuid());
     dbg!(get_memory());
     dbg!(get_swap());
-    dbg!(get_net_iocounters());
+    dbg!(has_swap());
+    dbg!(get_physical_ionets());
 }
 ```
 For a more complexe example, check [speculare-client/src/harvest/data_harvest.rs](https://github.com/speculare-cloud/speculare-client/blob/master/src/harvest/data_harvest.rs).

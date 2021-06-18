@@ -7,9 +7,9 @@ pub fn disks_benches(c: &mut Criterion) {
     c.bench_function("get_partitions_physical", |b| {
         b.iter(|| get_partitions_physical())
     });
-    c.bench_function("get_iostats", |b| b.iter(|| get_iostats()));
-    c.bench_function("get_iostats_physical", |b| {
-        b.iter(|| get_iostats_physical())
+    c.bench_function("get_ioblocks", |b| b.iter(|| get_ioblocks()));
+    c.bench_function("get_physical_ioblocks", |b| {
+        b.iter(|| get_physical_ioblocks())
     });
 }
 

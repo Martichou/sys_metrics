@@ -1,4 +1,4 @@
-use crate::disks::IoStats;
+use crate::disks::IoBlock;
 use crate::utils::KeyVal;
 
 use core_foundation_sys::{
@@ -15,7 +15,7 @@ use libc::{c_char, c_void};
 use std::io::Error;
 
 /// Clear the pointers for dict and release disk objects
-unsafe fn release_c_ptr_iostats(
+unsafe fn release_c_ptr_ioblocks(
     parent_dict: *mut c_void,
     props_dict: *mut c_void,
     disk: io_registry_entry_t,
@@ -47,7 +47,7 @@ unsafe fn init_dicts(
     if IORegistryEntryCreateCFProperties(parent, props_dict as *mut _, kCFAllocatorDefault, 0)
         != kIOReturnSuccess
     {
-        release_c_ptr_iostats(
+        release_c_ptr_ioblocks(
             parent_dict as *mut c_void,
             props_dict as *mut c_void,
             disk,
@@ -60,8 +60,8 @@ unsafe fn init_dicts(
 }
 
 #[inline]
-unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
-    let mut viostats: Vec<IoStats> = Vec::new();
+unsafe fn _get_ioblocks(physical: bool) -> Result<Vec<IoBlock>, Error> {
+    let mut v_ioblocks: Vec<IoBlock> = Vec::new();
 
     let mut disk_list = std::mem::MaybeUninit::<io_iterator_t>::uninit();
     if IOServiceGetMatchingServices(
@@ -107,7 +107,7 @@ unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
         if physical {
             let is_one = parent_dict.get_bool("Removable\0")?;
             if is_one {
-                release_c_ptr_iostats(
+                release_c_ptr_ioblocks(
                     parent_dict as *mut c_void,
                     props_dict as *mut c_void,
                     disk,
@@ -119,7 +119,7 @@ unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
         }
 
         // Get the value we're interested in from the stats_dict
-        let result = || -> Result<IoStats, Error> {
+        let result = || -> Result<IoBlock, Error> {
             // Get the stats dictionnary if it exists
             let stats_dict = props_dict.get_dict("Statistics\0")?;
             // Get the values from the stats_dict
@@ -131,7 +131,7 @@ unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
                 + stats_dict.get_i64("Total Time (Write)\0")?) as u64;
             let device_name = parent_dict.get_string("BSD Name\0")?;
 
-            Ok(IoStats {
+            Ok(IoBlock {
                 device_name,
                 read_count,
                 read_bytes,
@@ -144,7 +144,7 @@ unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
         let curr_io = match result() {
             Ok(val) => val,
             Err(err) => {
-                release_c_ptr_iostats(
+                release_c_ptr_ioblocks(
                     parent_dict as *mut c_void,
                     props_dict as *mut c_void,
                     disk,
@@ -154,11 +154,11 @@ unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
             }
         };
 
-        // Add the disk to the Vector of IoStats
-        viostats.push(curr_io);
+        // Add the disk to the Vector of IoBlocks
+        v_ioblocks.push(curr_io);
 
         // Release dicts used and disk
-        release_c_ptr_iostats(
+        release_c_ptr_ioblocks(
             parent_dict as *mut c_void,
             props_dict as *mut c_void,
             disk,
@@ -169,27 +169,27 @@ unsafe fn _get_iostats(physical: bool) -> Result<Vec<IoStats>, Error> {
     }
     IOObjectRelease(disk_list);
 
-    Ok(viostats)
+    Ok(v_ioblocks)
 }
 
-/// Get basic [IoStats] (physical and virtual) info for each disks/partitions.
+/// Get basic [IoBlock] (physical and virtual) info for each disks/partitions.
 ///
 /// It only contains the `device_name` and the number of bytes `read`/`wrtn`.
 ///
 /// On macOS it will use unsafes call to multiple OSX specific functions.
 ///
-/// [IoStats]: ../struct.IoStats.html
-pub fn get_iostats() -> Result<Vec<IoStats>, Error> {
-    unsafe { _get_iostats(false) }
+/// [IoBlock]: ../struct.IoBlock.html
+pub fn get_ioblocks() -> Result<Vec<IoBlock>, Error> {
+    unsafe { _get_ioblocks(false) }
 }
 
-/// Get basic [IoStats] (physical) info for each physical disks.
+/// Get basic [IoBlock] (physical) info for each physical disks.
 ///
 /// It only contains the `device_name` and the number of bytes `read`/`wrtn`.
 ///
 /// On macOS it will use unsafes call and detect if the disk is marked as Removable, if it's not... it's a physical device
 ///
-/// [IoStats]: ../disks/struct.IoStats.html
-pub fn get_iostats_physical() -> Result<Vec<IoStats>, Error> {
-    unsafe { _get_iostats(true) }
+/// [IoBlock]: ../disks/struct.IoBlock.html
+pub fn get_physical_ioblocks() -> Result<Vec<IoBlock>, Error> {
+    unsafe { _get_ioblocks(true) }
 }

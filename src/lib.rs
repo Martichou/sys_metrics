@@ -16,7 +16,7 @@
 //! dbg!(get_cpustats());
 //! dbg!(get_cputimes());
 //! dbg!(get_loadavg());
-//! dbg!(get_iostats_physical());
+//! dbg!(get_physical_ioblocks());
 //! dbg!(get_partitions_physical());
 //! dbg!(get_host_info());
 //! dbg!(get_hostname());

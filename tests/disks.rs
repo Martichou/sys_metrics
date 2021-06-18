@@ -18,8 +18,8 @@ mod tests {
     }
 
     #[test]
-    fn test_iostats_physical() {
-        let stats = get_iostats_physical().unwrap();
+    fn test_physical_ioblocks() {
+        let stats = get_physical_ioblocks().unwrap();
 
         assert!(stats.len() > 0);
 
