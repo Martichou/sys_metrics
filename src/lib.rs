@@ -27,7 +27,7 @@
 //! dbg!(get_memory());
 //! dbg!(get_swap());
 //! dbg!(has_swap());
-//! dbg!(get_net_physical_iocounters());
+//! dbg!(get_physical_ionets());
 //! ```
 
 /// CPU information

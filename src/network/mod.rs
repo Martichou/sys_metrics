@@ -5,7 +5,7 @@ pub use sys::*;
 use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize, Default)]
-pub struct IoCounters {
+pub struct IoNet {
     pub interface: String,
     pub rx_bytes: u64,
     pub rx_packets: u64,

@@ -1,4 +1,4 @@
-use crate::network::IoCounters;
+use crate::network::IoNet;
 
 use std::{
     fs::File,
@@ -7,9 +7,9 @@ use std::{
 };
 
 #[inline]
-fn _get_net_iocounters(physical: bool) -> Result<Vec<IoCounters>, Error> {
+fn _get_ionets(physical: bool) -> Result<Vec<IoNet>, Error> {
     let file = File::open("/proc/net/dev")?;
-    let mut v_iocounters: Vec<IoCounters> = Vec::new();
+    let mut v_ionets: Vec<IoNet> = Vec::new();
     let mut file = BufReader::with_capacity(2048, file);
 
     let mut line_skip = 0;
@@ -55,7 +55,7 @@ fn _get_net_iocounters(physical: bool) -> Result<Vec<IoCounters>, Error> {
         let tx_errs = parts.next().unwrap_or("0").parse::<u64>().unwrap();
         let tx_drop = parts.next().unwrap_or("0").parse::<u64>().unwrap();
 
-        v_iocounters.push(IoCounters {
+        v_ionets.push(IoNet {
             interface,
             rx_bytes,
             rx_packets,
@@ -69,23 +69,23 @@ fn _get_net_iocounters(physical: bool) -> Result<Vec<IoCounters>, Error> {
         line.clear();
     }
 
-    Ok(v_iocounters)
+    Ok(v_ionets)
 }
 
-/// Return the [IoCounters] struct.
+/// Return the [IoNet] struct.
 ///
 /// It will get the info from `/proc/net/dev`.
 ///
-/// [IoCounters]: ../network/struct.IoCounters.html
-pub fn get_net_iocounters() -> Result<Vec<IoCounters>, Error> {
-    _get_net_iocounters(false)
+/// [IoNet]: ../network/struct.IoNet.html
+pub fn get_ionets() -> Result<Vec<IoNet>, Error> {
+    _get_ionets(false)
 }
 
-/// Return the [IoCounters] struct.
+/// Return the [IoNet] struct.
 ///
 /// It will get the info from `/proc/net/dev` but will only keep those not present in /sys/devices/virtual/net/.
 ///
-/// [IoCounters]: ../network/struct.IoCounters.html
-pub fn get_net_physical_iocounters() -> Result<Vec<IoCounters>, Error> {
-    _get_net_iocounters(true)
+/// [IoNet]: ../network/struct.IoNet.html
+pub fn get_physical_ionets() -> Result<Vec<IoNet>, Error> {
+    _get_ionets(true)
 }

@@ -1,6 +1,6 @@
 // Based on https://github.com/heim-rs/heim/blob/master/heim-net/src/sys/macos/bindings.rs
 use crate::binding::{if_msghdr2, if_msghdr_partial};
-use crate::network::IoCounters;
+use crate::network::IoNet;
 
 use libc::sysctl;
 use std::io::Error;
@@ -110,10 +110,10 @@ fn net_pf_route() -> Result<Routes, Error> {
     Ok(Routes { position: 0, data })
 }
 
-/// Return the [IoCounters] struct.
+/// Return the [IoNet] struct.
 ///
-/// [IoCounters]: ../network/struct.IoCounters.html
-pub fn get_net_iocounters() -> Result<Vec<IoCounters>, Error> {
+/// [IoNet]: ../network/struct.IoNet.html
+pub fn get_ionets() -> Result<Vec<IoNet>, Error> {
     net_pf_route()?
         .into_iter()
         .map(|msg: if_msghdr2| {
@@ -128,7 +128,7 @@ pub fn get_net_iocounters() -> Result<Vec<IoCounters>, Error> {
             let first_nul = name.iter().position(|c| *c == b'\0').unwrap_or(0);
             let name = String::from_utf8_lossy(&name[..first_nul]).to_string();
 
-            Ok(IoCounters {
+            Ok(IoNet {
                 interface: name,
                 rx_bytes: msg.ifm_data.ifi_ibytes as u64,
                 rx_packets: msg.ifm_data.ifi_ipackets as u64,
@@ -144,6 +144,6 @@ pub fn get_net_iocounters() -> Result<Vec<IoCounters>, Error> {
 }
 
 /// TODO
-pub fn get_net_physical_iocounters() -> Result<Vec<IoCounters>, Error> {
+pub fn get_physical_ionets() -> Result<Vec<IoNet>, Error> {
     Ok(vec![])
 }
