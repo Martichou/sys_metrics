@@ -1,7 +1,14 @@
 #[cfg(test)]
-mod tests {
+mod cpu {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use sys_metrics::cpu::*;
+
+    #[test]
+    fn test_cpucorecount() {
+        let logical_count = get_cpu_logical_count().unwrap();
+
+        assert!(logical_count > 0);
+    }
 
     #[test]
     fn test_cpufreq() {
@@ -11,15 +18,23 @@ mod tests {
     }
 
     #[test]
+    #[allow(unused_comparisons)]
     fn test_cputimes() {
-        let _cputimes = get_cputimes().unwrap();
+        let cputimes = get_cputimes().unwrap();
+
+        assert!(cputimes.total_time() >= 0);
+        assert!(cputimes.busy_time() >= 0);
+        assert!(cputimes.idle_time() >= 0);
     }
 
     #[test]
+    #[allow(unused_comparisons)]
     fn test_cpustats() {
-        // TODO
-        //let _cpustats = get_cpustats().unwrap();
-        assert!(true);
+        let cpustats = get_cpustats().unwrap();
+
+        assert!(cpustats.interrupts >= 0);
+        assert!(cpustats.ctx_switches >= 0);
+        assert!(cpustats.soft_interrupts >= 0);
     }
 
     #[test]
