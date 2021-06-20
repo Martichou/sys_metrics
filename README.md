@@ -22,7 +22,7 @@ Usage
 Add the dependency to your `Cargo.toml`
 ```toml
 [dependencies]
-sys_metrics = "0.1"
+sys_metrics = "0.2"
 ```
 Example of usage: [main.rs](https://github.com/speculare-cloud/sys_metrics/tree/master/src/bin/main.rs)
 ```rust
