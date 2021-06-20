@@ -9,7 +9,7 @@
 //!
 //! ## Quick start
 //! ```
-//! use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*};
+//! use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*, virt::*};
 //!
 //! dbg!(get_cpu_logical_count());
 //! dbg!(get_cpufreq());
@@ -28,6 +28,7 @@
 //! dbg!(get_swap());
 //! dbg!(has_swap());
 //! dbg!(get_physical_ionets());
+//! dbg!(get_virt_info());
 //! ```
 
 /// CPU information
@@ -40,6 +41,8 @@ pub mod host;
 pub mod memory;
 /// Network information
 pub mod network;
+/// Virtualization information
+pub mod virt;
 
 #[cfg(target_os = "macos")]
 pub mod macos_binding;

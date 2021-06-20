@@ -1,4 +1,4 @@
-use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*};
+use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*, virt::*};
 
 #[allow(unused_must_use)]
 fn main() {
@@ -19,4 +19,5 @@ fn main() {
     dbg!(get_swap());
     dbg!(has_swap());
     dbg!(get_physical_ionets());
+    dbg!(get_virt_info());
 }
