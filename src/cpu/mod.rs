@@ -79,6 +79,9 @@ pub struct CpuStats {
     pub interrupts: u64,
     pub ctx_switches: u64,
     pub soft_interrupts: u64,
+    pub processes: u64,
+    pub procs_running: u64,
+    pub procs_blocked: u64,
 }
 
 #[cfg(target_os = "macos")]

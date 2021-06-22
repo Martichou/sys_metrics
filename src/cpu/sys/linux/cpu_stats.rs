@@ -24,7 +24,7 @@ pub fn get_cpustats() -> Result<CpuStats, Error> {
         // We only need 6 values which can be detected by their 4first bytes
         let first_bytes = &line.as_bytes()[..4];
         match first_bytes {
-            b"intr" | b"ctxt" | b"soft" => {}
+            b"intr" | b"ctxt" | b"soft" | b"proc" => {}
             _ => {
                 line.clear();
                 continue;
@@ -39,6 +39,9 @@ pub fn get_cpustats() -> Result<CpuStats, Error> {
             Some("intr") => &mut cpuctx.interrupts,
             Some("ctxt") => &mut cpuctx.ctx_switches,
             Some("softirq") => &mut cpuctx.soft_interrupts,
+            Some("processes") => &mut cpuctx.processes,
+            Some("procs_running") => &mut cpuctx.procs_running,
+            Some("procs_blocked") => &mut cpuctx.procs_blocked,
             _ => {
                 line.clear();
                 continue;
@@ -65,7 +68,7 @@ pub fn get_cpustats() -> Result<CpuStats, Error> {
         }
 
         // If we've found all our information, we can return.
-        if matched_lines == 3 {
+        if matched_lines == 6 {
             return Ok(cpuctx);
         }
 
