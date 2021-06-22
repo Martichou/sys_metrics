@@ -91,6 +91,9 @@ impl From<vmmeter> for CpuStats {
             interrupts: info.v_swtch.into(),
             ctx_switches: info.v_intr.into(),
             soft_interrupts: info.v_soft.into(),
+            processes: 0,
+            procs_running: 0,
+            procs_blocked: 0,
         }
     }
 }
