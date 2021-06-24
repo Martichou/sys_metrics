@@ -1,6 +1,7 @@
 use crate::host;
 use crate::memory::Swap;
 
+use libc::c_ulong;
 use std::{
     fs::File,
     io::{BufRead, BufReader, Error, ErrorKind},
@@ -21,9 +22,9 @@ pub fn get_swap() -> Result<Swap, Error> {
     };
 
     // Compute the values from the sysinfo and divide by 1024 for kb
-    let total_swap = (y.totalswap * y.mem_unit as u64) / 1024;
-    let free_swap = (y.freeswap * y.mem_unit as u64) / 1024;
-    let used_swap = total_swap - free_swap;
+    let total_swap: u64 = ((y.totalswap * y.mem_unit as c_ulong) / 1024).into();
+    let free_swap: u64 = ((y.freeswap * y.mem_unit as c_ulong) / 1024).into();
+    let used_swap: u64 = total_swap - free_swap;
     Ok(Swap {
         total: total_swap,
         free: free_swap,
