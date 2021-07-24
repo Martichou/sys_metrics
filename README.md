@@ -24,7 +24,7 @@ Add the dependency to your `Cargo.toml`
 [dependencies]
 sys_metrics = "0.2"
 ```
-Example of usage: [main.rs](https://github.com/speculare-cloud/sys_metrics/tree/master/src/bin/main.rs)
+Example of **basic** usage:
 ```rust
 use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*};
 
