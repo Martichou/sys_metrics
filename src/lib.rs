@@ -88,7 +88,10 @@ lazy_static::lazy_static! {
 
 /// Read from path to content, trim it and return the String
 #[cfg(target_os = "linux")]
-pub(crate) fn read_and_trim(path: &str) -> Result<String, Error> {
+pub(crate) fn read_and_trim<P>(path: P) -> Result<String, Error>
+where
+    P: AsRef<std::path::Path>,
+{
     let content = fs::read_to_string(path)?;
     Ok(content.trim().to_owned())
 }

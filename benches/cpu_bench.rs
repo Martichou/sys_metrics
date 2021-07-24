@@ -7,9 +7,8 @@ pub fn cpu_benches(c: &mut Criterion) {
     c.bench_function("get_cputimes", |b| b.iter(|| get_cputimes()));
     c.bench_function("get_cpustats", |b| b.iter(|| get_cpustats()));
     c.bench_function("get_loadavg", |b| b.iter(|| get_loadavg()));
-    c.bench_function("get_cpu_logical_count", |b| {
-        b.iter(|| get_cpu_logical_count())
-    });
+    c.bench_function("get_logical_count", |b| b.iter(|| get_logical_count()));
+    c.bench_function("get_physical_count", |b| b.iter(|| get_physical_count()));
 }
 
 criterion_group!(benches, cpu_benches);

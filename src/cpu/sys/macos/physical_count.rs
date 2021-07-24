@@ -1,12 +1,10 @@
 use libc::{c_uint, c_void, sysctl};
 use std::io::Error;
 
-/// Return the number of logical core the system has.
-///
-/// And on macOS it will make a syscall to sysctl with hw.logicalcpu.
-pub fn get_cpu_logical_count() -> Result<u32, Error> {
+/// Return the number of physcial core the system has.
+pub fn get_physical_count() -> Result<u32, Error> {
     let mut data: c_uint = 0;
-    let mut mib: [i32; 2] = [6, 25];
+    let mut mib: [i32; 2] = [6, 3];
 
     if unsafe {
         sysctl(

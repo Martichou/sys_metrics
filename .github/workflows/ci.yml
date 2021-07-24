@@ -63,6 +63,10 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
+      - name: Run
+        uses: actions-rs/cargo@v1
+        with:
+          command: run
 
   nightly:
     name: linux / nightly

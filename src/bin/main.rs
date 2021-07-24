@@ -2,7 +2,8 @@ use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*, virt::*};
 
 #[allow(unused_must_use)]
 fn main() {
-    dbg!(get_cpu_logical_count());
+    dbg!(get_logical_count());
+    dbg!(get_physical_count());
     dbg!(get_cpufreq());
     dbg!(get_cpustats());
     dbg!(get_cputimes());

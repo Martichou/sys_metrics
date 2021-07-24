@@ -5,9 +5,12 @@ mod cpu {
 
     #[test]
     fn test_cpucorecount() {
-        let logical_count = get_cpu_logical_count().unwrap();
+        let logical_count = get_logical_count().unwrap();
 
         assert!(logical_count > 0);
+
+        let physical_count = get_physical_count().unwrap();
+        assert!(physical_count > 0);
     }
 
     #[test]
