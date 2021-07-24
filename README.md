@@ -46,6 +46,7 @@ fn main() {
     dbg!(get_swap());
     dbg!(has_swap());
     dbg!(get_physical_ionets());
+    dbg!(get_virt_info());
 }
 ```
 For a more complexe example, check [speculare-client/src/harvest/data_harvest.rs](https://github.com/speculare-cloud/speculare-client/blob/master/src/harvest/data_harvest.rs).
@@ -56,8 +57,6 @@ Benchmarks
 ```bash
 ➜ cargo bench
 ```
-
-For reference you can check https://perf-ci.speculare.cloud for comparaison across commits (enabled since #ba799da3).
 
 Contributing
 --------------------------
