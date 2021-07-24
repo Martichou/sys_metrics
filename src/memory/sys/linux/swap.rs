@@ -14,6 +14,7 @@ use std::{
 /// Used is simply the total - free.
 ///
 /// [Swap]: ../memory/struct.Swap.html
+#[allow(clippy::useless_conversion)]
 pub fn get_swap() -> Result<Swap, Error> {
     // Init sysinfo
     let y = match host::sysinfo() {
