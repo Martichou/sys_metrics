@@ -29,7 +29,5 @@ pub fn get_logged_users() -> Result<Vec<String>, Error> {
 
 /// TODO - Return empty [] for now
 pub fn get_users() -> Result<Vec<String>, Error> {
-    let users: Vec<String> = Vec::new();
-
-    Ok(users)
+    Ok(vec![])
 }

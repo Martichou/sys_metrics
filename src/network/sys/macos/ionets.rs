@@ -143,7 +143,7 @@ pub fn get_ionets() -> Result<Vec<IoNet>, Error> {
         .collect()
 }
 
-/// TODO
+/// TODO - Return empty [] for now
 pub fn get_physical_ionets() -> Result<Vec<IoNet>, Error> {
     Ok(vec![])
 }
