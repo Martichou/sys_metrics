@@ -1,6 +1,6 @@
 use crate::virt::Virtualization;
 
-/// TODO - Return None
-pub fn get_virt_info() -> Option<Virtualization> {
-    None
+/// TODO - Return default Unknown
+pub fn get_virt_info() -> Virtualization {
+    Virtualization::Unknown
 }
