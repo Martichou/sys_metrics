@@ -12,7 +12,9 @@ use std::io::Error;
 pub struct Disks {
     pub name: String,
     pub mount_point: String,
+    /// Value is in MB
     pub total_space: u64,
+    /// Value is in MB
     pub avail_space: u64,
 }
 
@@ -39,8 +41,8 @@ where
     }
 
     let statvfs = unsafe { statvfs.assume_init() };
-    let total = statvfs.f_blocks as u64 * statvfs.f_bsize as u64;
-    let free = statvfs.f_bavail as u64 * statvfs.f_bsize as u64;
+    let total = statvfs.f_blocks as u64 * statvfs.f_frsize as u64;
+    let free = statvfs.f_bavail as u64 * statvfs.f_frsize as u64;
 
     Ok((total, free))
 }

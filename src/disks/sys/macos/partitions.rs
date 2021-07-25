@@ -36,12 +36,11 @@ fn _get_partitions(physical: bool) -> Result<Vec<Disks>, Error> {
             Ok(val) => val,
             Err(x) => return Err(x),
         };
-        // TODO - Check if the / 100000 is correct
         vdisks.push(Disks {
             name: to_str(stat.f_mntfromname.as_ptr()).to_owned(),
             mount_point: path.to_owned(),
-            total_space: usage.0 / 100000,
-            avail_space: usage.1 / 100000,
+            total_space: usage.0 / (1024 * 1024),
+            avail_space: usage.1 / (1024 * 1024),
         });
     }
 
