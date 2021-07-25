@@ -29,7 +29,8 @@ Example of **basic** usage:
 use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*};
 
 fn main() {
-    dbg!(get_cpu_logical_count());
+    dbg!(get_logical_count());
+    dbg!(get_physical_count());
     dbg!(get_cpufreq());
     dbg!(get_cpustats());
     dbg!(get_cputimes());
