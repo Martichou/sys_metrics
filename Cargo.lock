@@ -514,7 +514,7 @@ dependencies = [
 
 [[package]]
 name = "sys_metrics"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "core-foundation-sys 0.8.2",
  "criterion",
