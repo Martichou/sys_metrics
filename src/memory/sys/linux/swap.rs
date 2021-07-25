@@ -22,9 +22,9 @@ pub fn get_swap() -> Result<Swap, Error> {
         Err(x) => return Err(Error::new(ErrorKind::Other, x)),
     };
 
-    // Compute the values from the sysinfo and divide by 1024 for kb
-    let total_swap: u64 = ((y.totalswap * y.mem_unit as c_ulong) / 1024).into();
-    let free_swap: u64 = ((y.freeswap * y.mem_unit as c_ulong) / 1024).into();
+    // Compute the values from the sysinfo and divide by (1024 * 1024) for MB
+    let total_swap: u64 = ((y.totalswap * y.mem_unit as c_ulong) / (1024 * 1024)).into();
+    let free_swap: u64 = ((y.freeswap * y.mem_unit as c_ulong) / (1024 * 1024)).into();
     let used_swap: u64 = total_swap - free_swap;
     Ok(Swap {
         total: total_swap,

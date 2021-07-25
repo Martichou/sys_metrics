@@ -52,9 +52,11 @@ pub fn get_memory() -> Result<Memory, Error> {
     }
 
     Ok(Memory {
-        total,
-        free: u64::from(vm_stats.free_count + vm_stats.speculative_count) * (*PAGE_SIZE),
-        used: u64::from(vm_stats.active_count + vm_stats.wire_count) * (*PAGE_SIZE),
+        total: total / (1024 * 1024),
+        free: (u64::from(vm_stats.free_count - vm_stats.speculative_count) * (*PAGE_SIZE))
+            / (1024 * 1024),
+        used: (u64::from(vm_stats.active_count + vm_stats.wire_count) * (*PAGE_SIZE))
+            / (1024 * 1024),
         shared: 0,
         buffers: 0,
         cached: 0,

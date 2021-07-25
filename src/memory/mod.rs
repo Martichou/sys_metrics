@@ -5,7 +5,7 @@ pub use sys::*;
 use serde::Serialize;
 /// Struct containing the memory (ram/swap) information.
 ///
-/// All values are in KB.
+/// All values are in MB.
 #[derive(Debug, Clone, Serialize, Default)]
 pub struct Memory {
     pub total: u64,
@@ -28,7 +28,7 @@ impl Memory {
 
 /// Struct containing the memory swap information.
 ///
-/// All values are in KB.
+/// All values are in MB.
 #[derive(Debug, Clone, Serialize)]
 pub struct Swap {
     pub total: u64,

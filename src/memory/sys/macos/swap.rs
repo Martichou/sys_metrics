@@ -26,11 +26,11 @@ pub fn get_swap() -> Result<Swap, Error> {
     }
     let swap_info = unsafe { swap_info.assume_init() };
 
-    // Compute the values from the swap_info and divide by 1024 for kb
+    // Compute the values from the swap_info and divide by 1024 for MB
     Ok(Swap {
-        total: swap_info.xsu_total / 1024,
-        free: swap_info.xsu_avail / 1024,
-        used: swap_info.xsu_used / 1024,
+        total: swap_info.xsu_total / (1024 * 1024),
+        free: swap_info.xsu_avail / (1024 * 1024),
+        used: swap_info.xsu_used / (1024 * 1024),
     })
 }
 

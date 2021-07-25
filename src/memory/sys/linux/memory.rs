@@ -61,7 +61,7 @@ pub fn get_memory() -> Result<Memory, Error> {
                         }
                     };
                     matched_lines += 1;
-                    kbytes
+                    kbytes / 1024
                 }
             }
 
