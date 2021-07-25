@@ -36,10 +36,7 @@ mod host {
     #[test]
     #[allow(unused_comparisons)]
     fn test_logged_users() {
-        let x = match virt::get_virt_info() {
-            Some(info) => info,
-            None => Virtualization::Unknown,
-        };
+        let x = virt::get_virt_info();
 
         if x != Virtualization::Wsl {
             // If on WSL this function will fail
@@ -71,10 +68,7 @@ mod host {
 
     #[test]
     fn test_uuid() {
-        let x = match virt::get_virt_info() {
-            Some(info) => info,
-            None => Virtualization::Unknown,
-        };
+        let x = virt::get_virt_info();
 
         if x != Virtualization::Wsl {
             // If on WSL this function will fail

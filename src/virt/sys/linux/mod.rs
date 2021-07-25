@@ -2,9 +2,12 @@ use crate::virt::Virtualization;
 
 mod containers;
 
-pub fn get_virt_info() -> Option<Virtualization> {
-    match containers::detect_wsl("/proc/sys/kernel/osrelease") {
-        Ok(res) => Some(res),
-        Err(_) => None,
-    }
+/// Get the virtualization information of the current host
+///
+/// Return None if it cannot determine the Virtualization used (if any).
+pub fn get_virt_info() -> Virtualization {
+    containers::detect_openvz()
+        .or_else(|_| containers::detect_wsl())
+        .or_else(|_| containers::detect_systemd_container())
+        .map_or(Virtualization::Unknown, |res| res)
 }
