@@ -30,7 +30,7 @@ pub fn get_host_info() -> Result<HostInfo, Error> {
 
 fn get_uptime() -> Result<Duration, Error> {
     let mut data = std::mem::MaybeUninit::<timeval>::uninit();
-    let mut mib: [i32; 2] = [1, 21];
+    let mut mib: [i32; 2] = [libc::CTL_KERN, libc::KERN_BOOTTIME];
 
     if unsafe {
         sysctl(

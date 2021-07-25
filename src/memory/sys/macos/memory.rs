@@ -34,7 +34,7 @@ pub fn get_memory() -> Result<Memory, Error> {
     let vm_stats = unsafe { vm_stats.assume_init() };
 
     // TOTAL VIRTUAL MEMORY
-    let mut name: [i32; 2] = [6, 24];
+    let mut name: [i32; 2] = [libc::CTL_HW, libc::HW_MEMSIZE];
     let mut total = 0u64;
     let mut length = std::mem::size_of::<u64>();
     if unsafe {

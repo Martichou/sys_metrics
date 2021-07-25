@@ -8,7 +8,7 @@ use std::io::Error;
 ///
 /// [Swap]: ../memory/struct.Swap.html
 pub fn get_swap() -> Result<Swap, Error> {
-    let mut name: [i32; 2] = [2, 5];
+    let mut name: [i32; 2] = [libc::CTL_VM, libc::VM_SWAPUSAGE];
     let mut swap_info = std::mem::MaybeUninit::<libc::xsw_usage>::uninit();
     let mut length = std::mem::size_of::<libc::xsw_usage>();
     if unsafe {
@@ -43,7 +43,7 @@ pub fn get_swap() -> Result<Swap, Error> {
 /// Check the value of vm.compressor_mode and return true if the return is 4, else otherwise.
 /// See: https://tr23.net/2014/02/04/memory-compression-settings-in-osx-10-9/
 pub fn has_swap() -> Result<bool, Error> {
-    let mut name: [i32; 2] = [2, 124];
+    let mut name: [i32; 2] = [libc::CTL_VM, 124];
     let mut value = std::mem::MaybeUninit::<i32>::uninit();
     let mut length = std::mem::size_of::<i32>();
     if unsafe {

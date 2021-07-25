@@ -6,7 +6,7 @@ use std::io::Error;
 /// On macOS it will make a syscall which will return the cpufreq (macOS doesn't seems to have per-core clock).
 pub fn get_cpufreq() -> Result<f64, Error> {
     let mut data: c_uint = 0;
-    let mut mib = [6, 15];
+    let mut mib = [libc::CTL_HW, libc::HW_CPU_FREQ];
 
     if unsafe {
         sysctl(
