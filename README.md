@@ -59,6 +59,13 @@ Benchmarks
 ➜ cargo bench
 ```
 
+Supported targets
+--------------------------
+| Target                               | `test` |
+|--------------------------------------|:------:|
+| `x86_64-apple-darwin`                |   ✓    |
+| `x86_64-unknown-linux-gnu`           |   ✓    |
+
 Contributing
 --------------------------
 
