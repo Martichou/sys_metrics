@@ -24,17 +24,17 @@ pub fn get_cputimes() -> Result<CpuTimes, Error> {
 
         // TODO - Add guard if less than 7 fields
         // Skip the first columns which is the name of the stats
-        let user = fields.nth(1).unwrap();
-        let nice = fields.next().unwrap();
-        let system = fields.next().unwrap();
-        let idle = fields.next().unwrap();
-        let iowait = fields.next().unwrap();
-        let irq = fields.next().unwrap();
-        let softirq = fields.next().unwrap();
+        let user = nth!(fields, 1)?;
+        let nice = nth!(fields, 0)?;
+        let system = nth!(fields, 0)?;
+        let idle = nth!(fields, 0)?;
+        let iowait = nth!(fields, 0)?;
+        let irq = nth!(fields, 0)?;
+        let softirq = nth!(fields, 0)?;
         // Unwrap_or because the 8th-10th fields are not present on old kernel
-        let steal = fields.next().unwrap_or("0");
-        let guest = fields.next().unwrap_or("0");
-        let guest_nice = fields.next().unwrap_or("0");
+        let steal = nth!(fields, 0).unwrap_or("0");
+        let guest = nth!(fields, 0).unwrap_or("0");
+        let guest_nice = nth!(fields, 0).unwrap_or("0");
         // Return the struct, and parse to i64
         return Ok(CpuTimes {
             user: user.parse::<u64>().unwrap(),

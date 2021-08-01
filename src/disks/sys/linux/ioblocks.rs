@@ -24,7 +24,7 @@ fn _get_ioblocks(physical: bool) -> Result<Vec<IoBlock>, Error> {
     while file.read_line(&mut line)? != 0 {
         let mut fields = line.split_whitespace();
 
-        let name = fields.nth(2).unwrap();
+        let name = nth!(fields, 2)?;
         // Based on the sysstat code:
         // https://github.com/sysstat/sysstat/blob/1c711c1fd03ac638cfc1b25cdf700625c173fd2c/common.c#L200
         // Some devices may have a slash in their name (eg. cciss/c0d0...) so replace them with `!`
@@ -33,12 +33,12 @@ fn _get_ioblocks(physical: bool) -> Result<Vec<IoBlock>, Error> {
             line.clear();
             continue;
         }
-        let read_count = fields.next().unwrap();
-        let read_bytes = fields.nth(1).unwrap();
-        let write_count = fields.next().unwrap();
-        let write_bytes = fields.nth(1).unwrap();
+        let read_count = nth!(fields, 0)?;
+        let read_bytes = nth!(fields, 1)?;
+        let write_count = nth!(fields, 0)?;
+        let write_bytes = nth!(fields, 1)?;
         // Seconds
-        let busy_time = fields.nth(2).unwrap();
+        let busy_time = nth!(fields, 2)?;
 
         if fields.count() < 2 {
             return Err(Error::new(ErrorKind::Other, "Invalid /proc/diskstats"));

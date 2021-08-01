@@ -32,6 +32,18 @@
 //! dbg!(get_virt_info());
 //! ```
 
+macro_rules! nth {
+    ($a:expr, $b:expr) => {
+        match $a.nth($b) {
+            Some(val) => Ok(val),
+            None => Err(Error::new(
+                ErrorKind::Other,
+                "The fields asked for does not exists",
+            )),
+        }
+    };
+}
+
 /// CPU information
 pub mod cpu;
 /// Disks information
