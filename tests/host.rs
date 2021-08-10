@@ -29,7 +29,6 @@ mod host {
 
     #[test]
     fn test_hostname() {
-        // TODO
         let _hostname = get_hostname().unwrap();
     }
 

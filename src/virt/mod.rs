@@ -5,8 +5,6 @@ pub use sys::*;
 #[derive(Debug, Eq, PartialEq)]
 pub enum Virtualization {
     // VMs
-    /// TODO
-
     // Containers
     /// OpenVz (https://openvz.org/)
     OpenVz,

@@ -8,7 +8,6 @@ use std::{
     os::unix::prelude::*,
 };
 
-// TODO - Return more info than just the username
 /// Get the currently logged users.
 ///
 /// Will get them from `/var/run/utmp`. If the file does not exist, it will return and Error.
@@ -41,9 +40,6 @@ pub fn get_logged_users() -> Result<Vec<String>, Error> {
     Ok(users)
 }
 
-// TODO - These const value are default in `login.defs` and consistent accross linux
-//        but can be customized by the owner. Better do a lazy value from these reading /etc/login.defs
-//        UID_MAX (number), UID_MIN (number)
 // Range of user IDs used for the creation of regular users by useradd or newusers.
 //
 // The default value for UID_MIN (resp.  UID_MAX) is 1000 (resp. 60000).

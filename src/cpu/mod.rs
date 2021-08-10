@@ -70,10 +70,6 @@ impl From<host_cpu_load_info> for CpuTimes {
     }
 }
 /// Struct containing cpu stats information.
-///
-/// TODO (Linux) - Details what each interrupts are:
-/// - intr contains a LOT of different interrupts, might be worth detailling the important one
-/// - softirq contains 10 types of softirq
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct CpuStats {
     pub interrupts: u64,
