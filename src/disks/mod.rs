@@ -29,7 +29,7 @@ pub struct IoBlock {
     pub busy_time: u64,
 }
 
-/// Return the total/free space of a Disk from it's path (mount_point).
+/// Return the (total, free) space of a Disk from it's path (mount_point).
 pub fn disk_usage<P>(path: P) -> Result<(u64, u64), Error>
 where
     P: AsRef<[u8]>,
@@ -47,13 +47,13 @@ where
     Ok((total, free))
 }
 
-/// Detect if a filesysteme is for a physical drive or not.
+/// Detect if a filesystem is for a physical drive or not.
 /// This is not 100% true, but it's true enough for me.
-/// The better approach would be to read the filesystems from /proc/filesystems
-/// maybe construct a lazy_static array of filesystems.
-pub(crate) fn is_physical_filesys(filesysteme: &str) -> bool {
+/// The better approach would be to read the filesystem from /proc/filesystems
+/// maybe construct a lazy_static array of filesystem.
+pub(crate) fn is_physical_filesys(filesystem: &str) -> bool {
     matches!(
-        filesysteme,
+        filesystem,
         "ext2"
             | "ext3"
             | "ext4"

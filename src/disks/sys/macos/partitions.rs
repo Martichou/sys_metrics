@@ -47,22 +47,14 @@ fn _get_partitions(physical: bool) -> Result<Vec<Disks>, Error> {
     Ok(vdisks)
 }
 
-/// Return a Vec of [Disks] (physical and virtual) with their minimal informations.
-///
-/// Contains `name`, `mount_point` and `total`/`free` space.
-///
-/// On macOS it will use an unsafe call to `getfsstat64`.
+/// Return a Vec of [Disks] (physical and virtual) with their minimal information.
 ///
 /// [Disks]: ../disks/struct.Disks.html
 pub fn get_partitions() -> Result<Vec<Disks>, Error> {
     _get_partitions(false)
 }
 
-/// Return a Vec of [Disks] (physical) with their minimal informations.
-///
-/// Contains `name`, `mount_point` and `total`/`free` space.
-///
-/// On macOS it will use an unsafe call to `getfsstat64`.
+/// Return a Vec of [Disks] (physical) with their minimal information.
 ///
 /// [Disks]: ../disks/struct.Disks.html
 pub fn get_partitions_physical() -> Result<Vec<Disks>, Error> {

@@ -6,28 +6,28 @@ pub use sys::*;
 pub enum Virtualization {
     // VMs
     // Containers
-    /// OpenVz (https://openvz.org/)
+    /// OpenVz (<https://openvz.org/>)
     OpenVz,
 
-    /// `lxc-libvirt` (https://libvirt.org/drvlxc.html)
+    /// `lxc-libvirt` (<https://libvirt.org/drvlxc.html>)
     LxcLibvirt,
 
-    /// Linux Containers (https://linuxcontainers.org/lxc)
+    /// Linux Containers (<https://linuxcontainers.org/lxc>)
     Lxc,
 
-    /// `systemd-nspawn` container manager (https://www.freedesktop.org/wiki/Software/systemd/)
+    /// `systemd-nspawn` container manager (<https://www.freedesktop.org/wiki/Software/systemd/>)
     SystemdNspawn,
 
-    /// Docker (https://www.docker.com/)
+    /// Docker (<https://www.docker.com/>)
     Docker,
 
-    /// Podman (https://podman.io/)
+    /// Podman (<https://podman.io/>)
     Podman,
 
-    /// CoreOS rkt (https://coreos.com/rkt/)
+    /// CoreOS rkt (<https://coreos.com/rkt/>)
     Rkt,
 
-    /// Microsoft WSL (https://docs.microsoft.com/en-us/windows/wsl/about)
+    /// Microsoft WSL (<https://docs.microsoft.com/en-us/windows/wsl/about>)
     Wsl,
 
     /// Unknown virtualization system.

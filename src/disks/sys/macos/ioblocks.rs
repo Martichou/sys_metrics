@@ -174,20 +174,12 @@ unsafe fn _get_ioblocks(physical: bool) -> Result<Vec<IoBlock>, Error> {
 
 /// Get basic [IoBlock] (physical and virtual) info for each disks/partitions.
 ///
-/// It only contains the `device_name` and the number of bytes `read`/`wrtn`.
-///
-/// On macOS it will use unsafes call to multiple OSX specific functions.
-///
 /// [IoBlock]: ../struct.IoBlock.html
 pub fn get_ioblocks() -> Result<Vec<IoBlock>, Error> {
     unsafe { _get_ioblocks(false) }
 }
 
 /// Get basic [IoBlock] (physical) info for each physical disks.
-///
-/// It only contains the `device_name` and the number of bytes `read`/`wrtn`.
-///
-/// On macOS it will use unsafes call and detect if the disk is marked as Removable, if it's not... it's a physical device
 ///
 /// [IoBlock]: ../disks/struct.IoBlock.html
 pub fn get_physical_ioblocks() -> Result<Vec<IoBlock>, Error> {

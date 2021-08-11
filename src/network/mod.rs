@@ -4,6 +4,7 @@ pub use sys::*;
 
 use serde::Serialize;
 
+/// Struct containing the IO counters for the network interfaces.
 #[derive(Debug, Clone, Serialize, Default)]
 pub struct IoNet {
     pub interface: String,

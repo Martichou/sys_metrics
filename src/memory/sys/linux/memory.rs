@@ -7,8 +7,6 @@ use std::{
 
 /// Return the [Memory] struct.
 ///
-/// It will get the info from `/proc/meminfo`.
-///
 /// Note that `used` is computed from Total, Free, Buffers and Cached (which is Cached + SReclaimable).
 ///
 /// [Memory]: ../memory/struct.Memory.html

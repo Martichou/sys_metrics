@@ -2,8 +2,6 @@ use libc::{c_uint, c_void, sysctl};
 use std::io::Error;
 
 /// Return the number of logical core the system has.
-///
-/// And on macOS it will make a syscall to sysctl with hw.logicalcpu.
 pub fn get_logical_count() -> Result<u32, Error> {
     let mut data: c_uint = 0;
     let mut mib: [i32; 2] = [libc::CTL_HW, libc::HW_AVAILCPU];

@@ -9,10 +9,6 @@ use std::{
 
 /// Return the [Swap] struct.
 ///
-/// It will get the info from syscall to sysinfo.
-///
-/// Used is simply the total - free.
-///
 /// [Swap]: ../memory/struct.Swap.html
 #[allow(clippy::useless_conversion)]
 pub fn get_swap() -> Result<Swap, Error> {

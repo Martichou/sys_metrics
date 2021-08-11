@@ -1,35 +1,30 @@
 //! `sys_metrics` is a crate used to get a system's information.
 //!
-//! It attempt to provide information about:
+//! It provide information about:
 //!
 //!  * CPU
 //!  * Disks
 //!  * Host
 //!  * Memory
+//!  * Network
+//!  * Virtualization
 //!
 //! ## Quick start
 //! ```
-//! use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*, virt::*};
+//! use sys_metrics::{cpu::*};
 //!
-//! dbg!(get_logical_count());
-//! dbg!(get_physical_count());
-//! dbg!(get_cpufreq());
-//! dbg!(get_cpustats());
-//! dbg!(get_cputimes());
-//! dbg!(get_loadavg());
-//! dbg!(get_physical_ioblocks());
-//! dbg!(get_partitions_physical());
-//! dbg!(get_host_info());
-//! dbg!(get_hostname());
-//! dbg!(get_os_version());
-//! dbg!(get_logged_users());
-//! dbg!(get_users());
-//! dbg!(get_uuid());
-//! dbg!(get_memory());
-//! dbg!(get_swap());
-//! dbg!(has_swap());
-//! dbg!(get_physical_ionets());
-//! dbg!(get_virt_info());
+//! // This is just a very basic example of the CPU part.
+//! // Check the doc, this crate can do much more.
+//! let cpufreq = get_cpufreq().unwrap();
+//! println!("CPU Speed: {:13}MHz\n", cpufreq as u64);
+//!
+//! let cpu_logical = get_logical_count().unwrap();
+//! let cpu_physical = get_physical_count().unwrap();
+//!
+//! println!("CPU Core: {:12}\nLogical processors: {}", cpu_physical, cpu_logical);
+//!
+//! let loadavg = get_loadavg().unwrap();
+//! println!("Load average: {:10} {} {}", loadavg.one, loadavg.five, loadavg.fifteen);
 //! ```
 
 macro_rules! nth {
@@ -83,7 +78,7 @@ lazy_static::lazy_static! {
 
 /// Function used if you want to divide ticked value by the host's jiffies (USER_HZ) value. (like CpuStats)
 ///
-/// See https://en.wikipedia.org/wiki/Jiffy_(time) for more information.
+/// See <https://en.wikipedia.org/wiki/Jiffy_(time)> for more information.
 pub fn clock_ticks() -> Result<u64, Error> {
     let result = unsafe { libc::sysconf(libc::_SC_CLK_TCK) };
 

@@ -14,7 +14,8 @@ WIP Notes
 --------------------------
 
 `sys_metrics` in it's WIP stage will only support Linux and macOS.
-The structure is subject to change from version to version. If you have a comment about it or anything else feel free to open an issue.
+The structure is subject to change from version to version. 
+If you have a comment about it or anything else feel free to open an issue.
 
 Usage
 --------------------------
@@ -26,31 +27,24 @@ sys_metrics = "0.2"
 ```
 Example of **basic** usage:
 ```rust
-use sys_metrics::{cpu::*, disks::*, host::*, memory::*, network::*};
+use sys_metrics::{cpu::*};
 
+// This is just a very basic example of the CPU part.
+// Check the doc, this crate can do much more.
 fn main() {
-    dbg!(get_logical_count());
-    dbg!(get_physical_count());
-    dbg!(get_cpufreq());
-    dbg!(get_cpustats());
-    dbg!(get_cputimes());
-    dbg!(get_loadavg());
-    dbg!(get_physical_ioblocks());
-    dbg!(get_partitions_physical());
-    dbg!(get_host_info());
-    dbg!(get_hostname());
-    dbg!(get_os_version());
-    dbg!(get_logged_users());
-    dbg!(get_users());
-    dbg!(get_uuid());
-    dbg!(get_memory());
-    dbg!(get_swap());
-    dbg!(has_swap());
-    dbg!(get_physical_ionets());
-    dbg!(get_virt_info());
+    let cpufreq = get_cpufreq().unwrap();
+    println!("CPU Speed: {:13}MHz\n", cpufreq as u64);
+
+    let cpu_logical = get_logical_count().unwrap();
+    let cpu_physical = get_physical_count().unwrap();
+
+    println!("CPU Core: {:12}\nLogical processors: {}", cpu_physical, cpu_logical);
+
+    let loadavg = get_loadavg().unwrap();
+    println!("Load average: {:10} {} {}", loadavg.one, loadavg.five, loadavg.fifteen);
 }
 ```
-For a more complexe example, check [speculare-client/src/harvest/data_harvest.rs](https://github.com/speculare-cloud/speculare-client/blob/master/src/harvest/data_harvest.rs).
+For a more complex example, check this crate in use here: [speculare-client/src/harvest/data_harvest.rs](https://github.com/speculare-cloud/speculare-client/blob/master/src/harvest/data_harvest.rs).
 
 Benchmarks
 --------------------------

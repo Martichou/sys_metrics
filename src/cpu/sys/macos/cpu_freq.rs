@@ -1,9 +1,7 @@
 use libc::{c_uint, c_void, sysctl};
 use std::io::Error;
 
-/// Get the cpufreq as f64.
-///
-/// On macOS it will make a syscall which will return the cpufreq (macOS doesn't seems to have per-core clock).
+/// Get the cpufreq as f64 (in MHz).
 pub fn get_cpufreq() -> Result<f64, Error> {
     let mut data: c_uint = 0;
     let mut mib = [libc::CTL_HW, libc::HW_CPU_FREQ];

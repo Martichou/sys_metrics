@@ -1,8 +1,6 @@
 use std::io::Error;
 
 /// Return the number of logical core the system has.
-///
-/// On linux it will gather the info from libc's sysconf or sched_getaffinity as a fallback.
 pub fn get_logical_count() -> Result<u32, Error> {
     let cpus = unsafe { libc::sysconf(libc::_SC_NPROCESSORS_ONLN) };
     if cpus >= 0 {

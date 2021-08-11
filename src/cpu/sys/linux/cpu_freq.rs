@@ -4,9 +4,7 @@ use std::{
     io::{prelude::*, BufReader, ErrorKind},
 };
 
-/// Get the cpufreq as f64.
-///
-/// On linux it will return the first frequency it see from `/proc/cpuinfo` (key: cpu MHz).
+/// Get the cpufreq as f64 (in MHz).
 pub fn get_cpufreq() -> Result<f64, Error> {
     let file = File::open("/proc/cpuinfo")?;
     let mut file = BufReader::with_capacity(1024, file);

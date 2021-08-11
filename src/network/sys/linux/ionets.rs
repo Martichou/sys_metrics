@@ -74,16 +74,12 @@ fn _get_ionets(physical: bool) -> Result<Vec<IoNet>, Error> {
 
 /// Return the [IoNet] struct.
 ///
-/// It will get the info from `/proc/net/dev`.
-///
 /// [IoNet]: ../network/struct.IoNet.html
 pub fn get_ionets() -> Result<Vec<IoNet>, Error> {
     _get_ionets(false)
 }
 
-/// Return the [IoNet] struct.
-///
-/// It will get the info from `/proc/net/dev` but will only keep those not present in /sys/devices/virtual/net/.
+/// Return the [IoNet] struct but keeping only those from Physical Interfaces.
 ///
 /// [IoNet]: ../network/struct.IoNet.html
 pub fn get_physical_ionets() -> Result<Vec<IoNet>, Error> {

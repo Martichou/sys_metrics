@@ -8,7 +8,7 @@ use std::io::Error;
 
 /// Get basic [CpuTimes] info the host.
 ///
-/// It only contains row information, to get the delta we need
+/// It only contains raw information, to get the delta we need
 /// to get the diff between N and N-1.
 ///
 /// [CpuTimes]: ../cpu/struct.CpuTimes.html

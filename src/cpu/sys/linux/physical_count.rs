@@ -6,7 +6,7 @@ use std::{
     io::{prelude::*, BufReader, Error, ErrorKind},
 };
 
-/// Return the number of physcial core the system has using topology (glob).
+/// Return the number of physical core the system has using topology (glob).
 fn get_from_glob() -> Result<u32, Error> {
     let path = "/sys/devices/system/cpu/cpu*/topology/core_id";
     let entries = glob::glob(path).expect("Invalid glob pattern");
@@ -30,7 +30,7 @@ fn get_from_glob() -> Result<u32, Error> {
     }
 }
 
-/// Return the number of physcial core the system has using /proc/cpuinfo.
+/// Return the number of physical core the system has using /proc/cpuinfo.
 fn get_from_cpuinfo() -> Result<u32, Error> {
     let file = File::open("/proc/cpuinfo")?;
     let mut file = BufReader::with_capacity(1024, file);
@@ -56,7 +56,7 @@ fn get_from_cpuinfo() -> Result<u32, Error> {
     ))
 }
 
-/// Return the number of physcial core the system has.
+/// Return the number of physical core the system has.
 pub fn get_physical_count() -> Result<u32, Error> {
     match get_from_glob() {
         Ok(val) => Ok(val),

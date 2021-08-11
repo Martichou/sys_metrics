@@ -3,7 +3,7 @@ mod sys;
 pub use sys::*;
 
 use serde::Serialize;
-/// Struct containing the memory (ram/swap) information.
+/// Struct containing the memory virtual information.
 ///
 /// All values are in MB.
 #[derive(Debug, Clone, Serialize, Default)]

@@ -1,7 +1,7 @@
 use libc::{c_uint, c_void, sysctl};
 use std::io::Error;
 
-/// Return the number of physcial core the system has.
+/// Return the number of physical core the system has.
 pub fn get_physical_count() -> Result<u32, Error> {
     let mut data: c_uint = 0;
     let mut mib: [i32; 2] = [libc::CTL_HW, libc::HW_NCPU];

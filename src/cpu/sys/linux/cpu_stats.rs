@@ -7,10 +7,8 @@ use std::{
 
 /// Get basic [CpuStats] info the host.
 ///
-/// It only contains row information, to get the delta we need
+/// It only contains raw information, to get the delta you need
 /// to get the diff between N and N-1.
-///
-/// On linux it will get them from `/proc/stat`.
 ///
 /// [CpuStats]: ../cpu/struct.CpuStats.html
 pub fn get_cpustats() -> Result<CpuStats, Error> {

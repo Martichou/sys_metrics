@@ -4,8 +4,6 @@ use std::io::Error;
 
 /// Return the [Swap] struct.
 ///
-/// It will get the info from syscall to sysinfo.
-///
 /// [Swap]: ../memory/struct.Swap.html
 pub fn get_swap() -> Result<Swap, Error> {
     let mut name: [i32; 2] = [libc::CTL_VM, libc::VM_SWAPUSAGE];
@@ -37,7 +35,8 @@ pub fn get_swap() -> Result<Swap, Error> {
 // The [2, 124] values were got by reverse checking the sysctl call.
 // Like so: do the sysctl call using vm.compressor_mode instead of ptr::null_mut() and [0, 3] as the name.
 // [0, 3] is "magic and undocumented" as per https://github.com/st3fan/osx-10.9/blob/master/Libc-997.1.1/gen/FreeBSD/sysctlbyname.c
-// Which in terme give us the read name (code (2-124)).
+// Which in terms give us the read name (code (2-124)).
+
 /// Determine if the system uses Swap.
 ///
 /// Check the value of vm.compressor_mode and return true if the return is 4, else otherwise.

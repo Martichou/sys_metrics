@@ -59,18 +59,12 @@ fn _get_ioblocks(physical: bool) -> Result<Vec<IoBlock>, Error> {
 
 /// Get basic [IoBlock] (physical and virtual) info for each disks/partitions.
 ///
-/// It only contains the `device_name` and the number of bytes `read`/`wrtn`.
-///
-/// On linux it will get them from `/proc/diskstats`.
-///
 /// [IoBlock]: ../disks/struct.IoBlock.html
 pub fn get_ioblocks() -> Result<Vec<IoBlock>, Error> {
     _get_ioblocks(false)
 }
 
 /// Get basic [IoBlock] (physical) info for each physical disks.
-///
-/// On linux it will get them from `/proc/diskstats` and filter the result based on the access to their `/sys/block/{}`.
 ///
 /// [IoBlock]: ../struct.IoBlock.html
 pub fn get_physical_ioblocks() -> Result<Vec<IoBlock>, Error> {
