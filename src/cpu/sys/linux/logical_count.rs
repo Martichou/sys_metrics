@@ -6,14 +6,12 @@ pub fn get_logical_count() -> Result<u32, Error> {
     if cpus >= 0 {
         return Ok(cpus as u32);
     }
-    let mut set = std::mem::MaybeUninit::<libc::cpu_set_t>::uninit();
-    if unsafe {
-        libc::sched_getaffinity(0, std::mem::size_of::<libc::cpu_set_t>(), set.as_mut_ptr())
-    } == 0
+    let mut set: libc::cpu_set_t = unsafe { std::mem::zeroed() };
+    if unsafe { libc::sched_getaffinity(0, std::mem::size_of::<libc::cpu_set_t>(), &mut set) } == 0
     {
         let mut count: u32 = 0;
         for i in 0..libc::CPU_SETSIZE as usize {
-            if unsafe { libc::CPU_ISSET(i, &set.assume_init()) } {
+            if unsafe { libc::CPU_ISSET(i, &set) } {
                 count += 1
             }
         }
