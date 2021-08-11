@@ -4,20 +4,14 @@ use crate::to_str;
 use libc::utsname;
 use std::io::Error;
 
-/// Get the `os_version`.
+/// Get the os version.
 pub fn get_os_version() -> Result<String, Error> {
     let x = host::get_uname()?;
-    let mut ret = String::with_capacity(x.sysname.len() + x.release.len() + 1);
-    ret.push_str(to_str(x.sysname.as_ptr()));
-    ret.push_str(to_str(x.release.as_ptr()));
-    Ok(ret)
+    Ok(to_str(x.release.as_ptr()).to_owned())
 }
 
-/// Inlined function to get the `os_version` from a reference of uname.
+/// Inlined function to get the os version from a reference of uname.
 #[inline]
 pub(crate) fn get_os_version_from_uname(uts: &utsname) -> String {
-    let mut ret = String::with_capacity(uts.sysname.len() + uts.release.len() + 1);
-    ret.push_str(to_str(uts.sysname.as_ptr()));
-    ret.push_str(to_str(uts.release.as_ptr()));
-    ret
+    to_str(uts.release.as_ptr()).to_owned()
 }

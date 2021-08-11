@@ -12,7 +12,7 @@ use std::io::{Error, ErrorKind};
 
 /// Get the machine UUID of the host.
 ///
-/// On macOS it will use unsafe call to OSX specific function.
+/// Sse unsafe call to OSX specific functions (IOServiceGetMatchingService, ...).
 pub fn get_uuid() -> Result<String, Error> {
     #[allow(unused_assignments)]
     let uuid: CFStringRef;

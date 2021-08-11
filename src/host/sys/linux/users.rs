@@ -12,7 +12,6 @@ use std::{
 ///
 /// Will get them from `/var/run/utmp`. If the file does not exist, it will return and Error.
 /// Be carefull that the Error is only on Linux (and only if /var/run/utmp is not found).
-/// If an error occur on other platform, it will return and empty Vec.
 pub fn get_logged_users() -> Result<Vec<String>, Error> {
     let utmp_file = File::open("/var/run/utmp")?;
     let mut users: Vec<String> = Vec::new();
