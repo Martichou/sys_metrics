@@ -3,16 +3,14 @@ Comparing `sys_metrics` to other crates
 
 This page provides some benchmark comparisons of `sys_metrics` against other crates.
 
-Benchmarks
--------------
+# Benchmarks
+
 The benchmarks were performed on an i7-8750H running Windows 11 WSL2.
 As a result this does only reflect performance on Linux.
 
 Note that I only listed the benchmarks that were comparable, some benchmarks from heim, sys_metrics, ... are not present in the others. 
 
-At the moment [sysinfo](https://github.com/GuillaumeGomez/sysinfo) is not part of this benchmark comparison. If someone would like to help me, I'm having a little trouble figuring out what to compare with what in sysinfo (because of the refresh).
-
-|                | [sys_metrics](https://github.com/Martichou/sys_metrics)      | [heim](https://github.com/heim-rs/heim)   | [rust_psutil](https://github.com/rust-psutil/rust-psutil) |
+| | [sys_metrics](https://github.com/Martichou/sys_metrics) | [heim](https://github.com/heim-rs/heim) | [rust_psutil](https://github.com/rust-psutil/rust-psutil) |
 |-|:-:|:-:|:-:|
 | cpu_logical_count | **12.714 ns** | 228.28 ns | 865.69 ns |
 | cpu_physical_count | **149.42 us** | 225.26 us | 177.73 us |
@@ -33,3 +31,19 @@ At the moment [sysinfo](https://github.com/GuillaumeGomez/sysinfo) is not part o
 |||||
 | net_io | **14.387 us** | 206.43 us | x |
 | net_io_physical | **409.02 ns** | 102.94 us | x |
+
+## sys_metrics - sysinfo
+
+Due to the particular setup of sysinfo, I've decided to create a different category to compare both.
+
+| | [sys_metrics](https://github.com/Martichou/sys_metrics) | [sysinfo](https://github.com/GuillaumeGomez/sysinfo) | sys_metrics methods |
+|-|:-:|:-:|:-|
+| refresh_cpu\* | 20.578 us | 1.545 ms | get_cpustats + get_cputimes |
+| refresh_disks | **1.159 ms** | 1.268 ms | get_partitions |
+| refresh_memory | **7.409 us** | 9.584 us | get_memory + get_swap |
+| refresh_networks | **14.387 us** | 157.39 us | get_ionets |
+| refresh_users | **5.3504 us** | 193.49 us | get_users |
+
+\* refresh_cpu: sysinfo also collects statistics per processor, so it has a lot more work to do, which may explain the big difference in speed. Therefore I don't consider sys_metrics as faster than sysinfo.
+
+> If something is not correct in any of these benchmarks, feel free to open an issue and we will discuss it :)
