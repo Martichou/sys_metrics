@@ -49,6 +49,8 @@ For a more complex example, check this crate in use here: [speculare-client/src/
 Benchmarks
 --------------------------
 
+See [BENCHMARKS](https://github.com/Martichou/sys_metrics/blob/master/BENCHMARKS.md) for a comparison of sys_metrics with other crates.
+
 ```bash
 ➜ cargo bench
 ```
