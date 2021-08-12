@@ -5,6 +5,30 @@ pub use sys::*;
 #[derive(Debug, Eq, PartialEq)]
 pub enum Virtualization {
     // VMs
+    /// Xen project (<https://xenproject.org/>)
+    Xen,
+
+    /// Kernel Virtual Machine (<https://www.linux-kvm.org>)
+    Kvm,
+
+    /// QEMU (<https://www.qemu.org/>)
+    Qemu,
+
+    /// VMware (<https://www.vmware.com>)
+    Vmware,
+
+    /// Oracle virtualization (<https://www.oracle.com/virtualization/>)
+    Oracle,
+
+    /// Bochs IA-32 emulator (<http://bochs.sourceforge.net/>)
+    Bochs,
+
+    /// Parallels (<https://www.parallels.com/>)
+    Parallels,
+
+    /// FreeBSD bhyve (<https://wiki.freebsd.org/bhyve>)
+    Bhyve,
+
     // Containers
     /// OpenVz (<https://openvz.org/>)
     OpenVz,

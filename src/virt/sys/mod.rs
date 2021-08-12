@@ -7,3 +7,11 @@ pub use linux::*;
 mod macos;
 #[cfg(target_os = "macos")]
 pub use macos::*;
+
+#[inline]
+pub(crate) fn err_not_found() -> std::io::Error {
+    std::io::Error::new(
+        std::io::ErrorKind::Other,
+        "Content of WSL's path doesn't match our criteria.",
+    )
+}

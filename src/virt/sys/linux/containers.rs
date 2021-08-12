@@ -1,20 +1,12 @@
 // Based on https://github.com/heim-rs/heim/blob/master/heim-virt/src/sys/linux/containers.rs
 
-use crate::virt::Virtualization;
+use crate::virt::{err_not_found, Virtualization};
 
 use std::{
     fs::File,
-    io::{BufRead, BufReader, Error, ErrorKind},
+    io::{BufRead, BufReader, Error},
     path::Path,
 };
-
-#[inline]
-fn err_not_found() -> Error {
-    Error::new(
-        ErrorKind::Other,
-        "Content of WSL's path doesn't match our criteria.",
-    )
-}
 
 fn try_guess_container(value: &str) -> Result<Virtualization, Error> {
     match value {
@@ -40,10 +32,10 @@ pub(crate) fn detect_wsl() -> Result<Virtualization, Error> {
 }
 
 pub(crate) fn detect_openvz() -> Result<Virtualization, Error> {
-    let f1 = Path::new("/proc/vz").exists();
-    let f2 = Path::new("/proc/bc").exists();
-
-    match (f1, f2) {
+    match (
+        Path::new("/proc/vz").exists(),
+        Path::new("/proc/bc").exists(),
+    ) {
         // `/proc/vz` exists in container and outside of the container,
         // `/proc/bc` only outside of the container.
         (true, false) => Ok(Virtualization::OpenVz),
