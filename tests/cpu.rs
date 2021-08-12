@@ -1,16 +1,17 @@
 #[cfg(test)]
+#[allow(unused_comparisons)]
 mod cpu {
-    // Note this useful idiom: importing names from outer (for mod tests) scope.
     use sys_metrics::cpu::*;
 
     #[test]
     fn test_cpucorecount() {
         let logical_count = get_logical_count().unwrap();
-
         assert!(logical_count > 0);
+        assert!(logical_count < 1024);
 
         let physical_count = get_physical_count().unwrap();
         assert!(physical_count > 0);
+        assert!(physical_count < 1024);
     }
 
     #[test]
@@ -21,7 +22,6 @@ mod cpu {
     }
 
     #[test]
-    #[allow(unused_comparisons)]
     fn test_cputimes() {
         let cputimes = get_cputimes().unwrap();
 
@@ -31,7 +31,6 @@ mod cpu {
     }
 
     #[test]
-    #[allow(unused_comparisons)]
     fn test_cpustats() {
         let cpustats = get_cpustats().unwrap();
 

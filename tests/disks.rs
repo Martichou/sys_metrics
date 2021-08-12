@@ -1,4 +1,5 @@
 #[cfg(test)]
+#[allow(unused_comparisons)]
 mod disks {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use sys_metrics::disks::*;

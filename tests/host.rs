@@ -1,4 +1,5 @@
 #[cfg(test)]
+#[allow(unused_comparisons)]
 mod host {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use sys_metrics::host::*;
@@ -9,7 +10,6 @@ mod host {
         let host = get_host_info().unwrap();
 
         let loadavg = host.loadavg;
-
         let o = loadavg.one;
         assert!(o >= 0.0);
         let t = loadavg.five;
@@ -17,41 +17,33 @@ mod host {
         let f = loadavg.fifteen;
         assert!(f >= 0.0);
 
+        let b = host.system;
+        assert!(b.len() > 0);
+
         let c = host.uptime;
         assert!(c > 0);
 
         let x = host.os_version;
         assert!(x.len() > 0);
 
-        let y = host.hostname;
+        let y = host.kernel_version;
         assert!(y.len() > 0);
+
+        let z = host.hostname;
+        assert!(z.len() > 0);
     }
 
     #[test]
-    fn test_hostname() {
-        let _hostname = get_hostname().unwrap();
-    }
-
-    #[test]
-    #[allow(unused_comparisons)]
     fn test_logged_users() {
         let x = virt::get_virt_info();
 
         if x != Virtualization::Wsl {
-            // If on WSL this function will fail
             let users = get_logged_users().unwrap();
             assert!(users.len() >= 0);
         } else {
             // On WSL assume this test as success
             assert!(true);
         }
-    }
-
-    #[test]
-    fn test_os_version() {
-        let version = get_os_version().unwrap();
-
-        assert!(version.len() > 0);
     }
 
     #[test]
@@ -70,7 +62,6 @@ mod host {
         let x = virt::get_virt_info();
 
         if x != Virtualization::Wsl {
-            // If on WSL this function will fail
             let uuid = get_uuid().unwrap();
             assert!(uuid.len() > 0);
         } else {
