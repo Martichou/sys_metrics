@@ -1,9 +1,17 @@
-sys_metrics
-========
+<div align="center">
+  <h1>sys_metrics</h1>
+  <p>
+    <strong>Gather metrics from the host</strong>
+  </p>
+  <p>
+
+[![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](LICENSE)
 [![crates.io](https://img.shields.io/crates/v/sys_metrics.svg)](https://crates.io/crates/sys_metrics)
 [![Docs.rs](https://docs.rs/sys_metrics/badge.svg)](https://docs.rs/sys_metrics)
-[![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](LICENSE)
 [![CI](https://github.com/Martichou/sys_metrics/workflows/CI/badge.svg)](https://github.com/Martichou/sys_metrics/actions)
+
+  </p>
+</div>
 
 `sys_metrics` is a WIP project intended to give an alternative to others tools which can be slower or provide too many useless informations.
 It will try to have at least the same functionality as [psutil](https://github.com/giampaolo/psutil) or [heim](https://github.com/heim-rs/heim).
