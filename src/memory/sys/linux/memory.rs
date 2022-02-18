@@ -51,7 +51,12 @@ pub fn get_memory() -> Result<Memory, Error> {
                 // Increment the field we previously got (pointer)
                 *field += {
                     // Trim to only get the bytes value
-                    let kbytes = match value.trim_start().splitn(2, ' ').next() {
+                    let kbytes = match Some(
+                        value
+                            .trim_start()
+                            .split_once(' ')
+                            .map_or(value.trim_start(), |x| x.0),
+                    ) {
                         Some(kkbytes) => kkbytes.parse::<u64>().unwrap(),
                         None => {
                             line.clear();
