@@ -21,4 +21,5 @@ fn main() {
     dbg!(has_swap());
     dbg!(get_physical_ionets());
     dbg!(get_virt_info());
+    dbg!(get_each_cputimes());
 }
