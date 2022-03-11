@@ -10,7 +10,7 @@ use libc::c_void;
 use std::io::Error;
 use std::io::ErrorKind;
 
-pub trait KeyVal {
+pub(crate) trait KeyVal {
     unsafe fn get_dict(&self, key: &'static str) -> Result<CFDictionaryRef, Error>;
     unsafe fn get_i64(&self, key: &'static str) -> Result<i64, Error>;
     unsafe fn get_string(&self, key: &'static str) -> Result<String, Error>;

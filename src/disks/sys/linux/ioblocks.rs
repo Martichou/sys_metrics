@@ -28,7 +28,7 @@ fn _get_ioblocks(physical: bool) -> Result<Vec<IoBlock>, Error> {
         // Based on the sysstat code:
         // https://github.com/sysstat/sysstat/blob/1c711c1fd03ac638cfc1b25cdf700625c173fd2c/common.c#L200
         // Some devices may have a slash in their name (eg. cciss/c0d0...) so replace them with `!`
-        if physical && !Path::new(&format!("/sys/block/{}/device", name.replace("/", "!"))).exists()
+        if physical && !Path::new(&format!("/sys/block/{}/device", name.replace('/', "!"))).exists()
         {
             line.clear();
             continue;

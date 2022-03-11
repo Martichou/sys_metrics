@@ -27,6 +27,7 @@
 //! println!("Load average: {:10} {} {}", loadavg.one, loadavg.five, loadavg.fifteen);
 //! ```
 
+#[cfg(target_os = "linux")]
 macro_rules! nth {
     ($a:expr, $b:expr) => {
         match $a.nth($b) {
