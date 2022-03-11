@@ -8,6 +8,7 @@ mod macos;
 #[cfg(target_os = "macos")]
 pub use macos::*;
 
+#[cfg(target_os = "linux")]
 #[inline]
 pub(crate) fn err_not_found() -> std::io::Error {
     std::io::Error::new(
