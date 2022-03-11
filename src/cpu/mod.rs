@@ -18,6 +18,7 @@ pub struct LoadAvg {
 /// Struct containing cpu times information.
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct CpuTimes {
+    pub core: i16,
     pub user: u64,
     pub nice: u64,
     pub system: u64,

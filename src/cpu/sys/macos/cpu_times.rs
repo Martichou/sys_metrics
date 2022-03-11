@@ -31,3 +31,17 @@ pub fn get_cputimes() -> Result<CpuTimes, Error> {
     let stats = unsafe { stats.assume_init() };
     Ok(stats.into())
 }
+
+/// Get per core [CpuTimes] info the host.
+///
+/// It only contains raw information, to get the delta we need
+/// to get the diff between N and N-1.
+///
+/// Note that with this call, the core field will correspond
+/// to the number of the related core.
+///
+/// [CpuTimes]: ../cpu/struct.CpuTimes.html
+pub fn get_each_cputimes() -> Result<Vec<CpuTimes>, Error> {
+    // TODO
+    Ok(Vec::new())
+}
