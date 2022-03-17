@@ -1,10 +1,6 @@
 name: CI
 
-on:
-  pull_request:
-  push:
-    branches:
-      - master
+on: [push, pull_request]
 
 env:
   RUST_BACKTRACE: 1
@@ -12,34 +8,22 @@ env:
 jobs:
   style:
     name: Check Style
-    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
-    strategy:
-      matrix:
-        name:
-          - linux / stable
-          - macOS / stable
-        include:
-          - name: linux / stable
-          - name: macOS / stable
-            os: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install minimal stable with clippy and rustfmt
+        uses: actions/checkout@v3
+      - name: Install rust
         uses: actions-rs/toolchain@v1
         with:
-          profile: minimal
           toolchain: stable
-          components: rustfmt, clippy
+          components: rustfmt
+          profile: minimal
+          override: true
       - name: cargo fmt -- --check
         uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: -- --check
-      - name: cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
 
   build:
     name: ${{ matrix.name }}
@@ -56,7 +40,7 @@ jobs:
             os: macOS-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install rust
         uses: actions-rs/toolchain@v1
         with:
@@ -72,10 +56,6 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-      - name: Run
-        uses: actions-rs/cargo@v1
-        with:
-          command: run
 
   nightly:
     name: linux / nightly
@@ -83,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install rust
         uses: actions-rs/toolchain@v1
         with:
