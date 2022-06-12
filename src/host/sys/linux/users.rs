@@ -1,6 +1,6 @@
 use crate::to_str;
 
-use libc::{c_char, read, utmpx};
+use libc::{read, utmpx};
 use std::{
     fs::File,
     io::{BufRead, BufReader, Error},
@@ -26,12 +26,10 @@ pub fn get_logged_users() -> Result<Vec<String>, Error> {
     } != 0
     {
         let cbuffer = unsafe { buffer.assume_init() };
-        let cuser = unsafe { &*(&cbuffer.ut_user as *const [c_char]) };
+        let cuser: &[i8] = &cbuffer.ut_user;
 
         if cuser[0] != 0 && cbuffer.ut_type == libc::USER_PROCESS {
-            let csuser = to_str(cuser.as_ptr() as *const c_char)
-                .trim_matches('\0')
-                .to_owned();
+            let csuser = to_str(cuser.as_ptr().cast()).trim_matches('\0').to_owned();
             users.push(csuser);
         }
     }
