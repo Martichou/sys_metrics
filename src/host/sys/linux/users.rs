@@ -1,6 +1,6 @@
 use crate::to_str;
 
-use libc::{c_char, c_void, read, utmpx};
+use libc::{c_char, read, utmpx};
 use std::{
     fs::File,
     io::{BufRead, BufReader, Error},

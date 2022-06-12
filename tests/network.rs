@@ -11,6 +11,6 @@ mod network {
         #[cfg(target_os = "macos")]
         let ionets = get_ionets().unwrap();
 
-        assert!(ionets.len() > 0);
+        assert!(!ionets.is_empty());
     }
 }
