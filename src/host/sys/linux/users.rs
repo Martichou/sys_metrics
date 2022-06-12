@@ -15,17 +15,17 @@ use std::{
 pub fn get_logged_users() -> Result<Vec<String>, Error> {
     let utmp_file = File::open("/var/run/utmp")?;
     let mut users: Vec<String> = Vec::new();
-    let buffer = std::mem::MaybeUninit::<utmpx>::uninit().as_mut_ptr();
+    let mut buffer = std::mem::MaybeUninit::<utmpx>::uninit();
 
     while unsafe {
         read(
             utmp_file.as_raw_fd(),
-            buffer as *mut c_void,
+            buffer.as_mut_ptr().cast(),
             mem::size_of::<utmpx>(),
         )
     } != 0
     {
-        let cbuffer = unsafe { &*(buffer as *mut utmpx) as &utmpx };
+        let cbuffer = unsafe { buffer.assume_init() };
         let cuser = unsafe { &*(&cbuffer.ut_user as *const [c_char]) };
 
         if cuser[0] != 0 && cbuffer.ut_type == libc::USER_PROCESS {
