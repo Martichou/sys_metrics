@@ -1,14 +1,14 @@
+use serde::{Deserialize, Serialize};
+
 mod sys;
 
 pub use sys::*;
-
-use serde::Serialize;
 
 #[cfg(target_os = "macos")]
 use crate::binding::vmmeter;
 
 /// Struct containing a cpu's loadavg information.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct LoadAvg {
     pub one: f64,
     pub five: f64,
@@ -16,7 +16,7 @@ pub struct LoadAvg {
 }
 
 /// Struct containing cpu times information.
-#[derive(Debug, Clone, Default, Serialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CpuTimes {
     pub core: i16,
     pub user: u64,
@@ -71,7 +71,7 @@ impl From<host_cpu_load_info> for CpuTimes {
     }
 }
 /// Struct containing cpu stats information.
-#[derive(Debug, Clone, Default, Serialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CpuStats {
     pub interrupts: u64,
     pub ctx_switches: u64,

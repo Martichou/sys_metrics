@@ -1,12 +1,13 @@
+use serde::{Deserialize, Serialize};
+
 mod sys;
 
 pub use sys::*;
 
-use serde::Serialize;
 /// Struct containing the memory virtual information.
 ///
 /// All values are in MB.
-#[derive(Debug, Clone, Serialize, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Memory {
     pub total: u64,
     pub free: u64,
@@ -29,7 +30,7 @@ impl Memory {
 /// Struct containing the memory swap information.
 ///
 /// All values are in MB.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Swap {
     pub total: u64,
     pub free: u64,

@@ -1,8 +1,10 @@
+use serde::{Deserialize, Serialize};
+
 mod sys;
 
 pub use sys::*;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
 pub enum Virtualization {
     // VMs
     /// Xen project (<https://xenproject.org/>)

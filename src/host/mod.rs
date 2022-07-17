@@ -1,12 +1,13 @@
+use crate::cpu::LoadAvg;
+
+use serde::{Deserialize, Serialize};
+
 mod sys;
 
 pub use sys::*;
 
-use crate::cpu::LoadAvg;
-use serde::Serialize;
-
 /// Struct containing the principal host's information.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct HostInfo {
     pub loadavg: LoadAvg,
     pub system: String,

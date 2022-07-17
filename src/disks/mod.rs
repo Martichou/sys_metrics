@@ -1,14 +1,14 @@
+use libc::statvfs;
+use serde::{Deserialize, Serialize};
+use std::ffi::CString;
+use std::io::Error;
+
 mod sys;
 
 pub use sys::*;
 
-use libc::statvfs;
-use serde::Serialize;
-use std::ffi::CString;
-use std::io::Error;
-
 /// Struct containing a disk' information.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Disks {
     pub name: String,
     pub mount_point: String,
@@ -19,7 +19,7 @@ pub struct Disks {
 }
 
 /// Struct containing a disk_io (bytes read/wrtn) information.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct IoBlock {
     pub device_name: String,
     pub read_count: u64,
