@@ -22,7 +22,7 @@ fn _get_partitions(physical: bool) -> Result<Vec<Disks>, Error> {
             line.clear();
             continue;
         }
-        let usage: (u64, u64) = disk_usage(&path.as_bytes())?;
+        let usage: (u64, u64) = disk_usage(path.as_bytes())?;
         vdisks.push(Disks {
             name: name.to_owned(),
             mount_point: path.to_owned(),

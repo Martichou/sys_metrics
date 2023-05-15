@@ -41,8 +41,8 @@ where
     }
 
     let statvfs = unsafe { statvfs.assume_init() };
-    let total = statvfs.f_blocks as u64 * statvfs.f_frsize as u64;
-    let free = statvfs.f_bavail as u64 * statvfs.f_frsize as u64;
+    let total = statvfs.f_blocks * statvfs.f_frsize;
+    let free = statvfs.f_bavail * statvfs.f_frsize;
 
     Ok((total, free))
 }
