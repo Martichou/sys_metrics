@@ -56,25 +56,3 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-
-  nightly:
-    name: linux / nightly
-    needs: [style]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          override: true
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-      - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
