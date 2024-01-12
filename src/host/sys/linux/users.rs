@@ -26,7 +26,7 @@ pub fn get_logged_users() -> Result<Vec<String>, Error> {
     } != 0
     {
         let cbuffer = unsafe { buffer.assume_init() };
-        let cuser: &[i8] = &cbuffer.ut_user;
+        let cuser: &[libc::c_char] = &cbuffer.ut_user;
 
         if cuser[0] != 0 && cbuffer.ut_type == libc::USER_PROCESS {
             let csuser = to_str(cuser.as_ptr().cast()).trim_matches('\0').to_owned();
