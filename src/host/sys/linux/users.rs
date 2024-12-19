@@ -12,6 +12,7 @@ use std::{
 ///
 /// Will get them from `/var/run/utmp`. If the file does not exist, it will return and Error.
 /// Be careful that the Error is only on Linux (and only if /var/run/utmp is not found).
+#[cfg(not(target_env = "musl"))]
 pub fn get_logged_users() -> Result<Vec<String>, Error> {
     let utmp_file = File::open("/var/run/utmp")?;
     let mut users: Vec<String> = Vec::new();
@@ -35,6 +36,11 @@ pub fn get_logged_users() -> Result<Vec<String>, Error> {
     }
 
     Ok(users)
+}
+
+#[cfg(target_env = "musl")]
+pub fn get_logged_users() -> Result<Vec<String>, Error> {
+    unimplemented!("musl doesn't support utmp/wtmp");
 }
 
 // Range of user IDs used for the creation of regular users by useradd or newusers.
