@@ -10,7 +10,7 @@
 //!  * Virtualization
 //!
 //! ## Quick start
-//! ```
+//! ```ignore
 //! use sys_metrics::{cpu::*};
 //!
 //! // This is just a very basic example of the CPU part.

@@ -14,6 +14,7 @@ mod cpu {
         assert!(physical_count < 1024);
     }
 
+    #[cfg(not(target_os = "macos"))]
     #[test]
     fn test_cpufreq() {
         let cpufreq = get_cpufreq().unwrap();

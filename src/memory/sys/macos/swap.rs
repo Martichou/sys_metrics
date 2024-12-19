@@ -56,7 +56,12 @@ pub fn has_swap() -> Result<bool, Error> {
         )
     } != 0
     {
-        return Err(Error::last_os_error());
+        // If error, try to assume the has_swap by checking if swap return correctly
+        let perr = Error::last_os_error();
+        match get_swap().map(|_| true) {
+            Ok(v) => return Ok(v),
+            Err(_) => return Err(perr),
+        }
     }
     let value = unsafe { value.assume_init() };
 
